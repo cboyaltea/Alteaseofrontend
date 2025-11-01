@@ -21,7 +21,7 @@
         
         // ⚠️  IMPORTANT: Remplacez cette URL par votre URL Railway !
         // Exemple: https://votre-app-production.up.railway.app
-        const API_URL = 'https://alteaseo-production.up.railway.app'; // ⬅️ À REMPLACER !
+        const API_URL = 'http://localhost:3000'; // ⬅️ À REMPLACER !
         
         // API Helper Functions
         const apiCall = async (endpoint, options = {}) => {
@@ -883,6 +883,8 @@
         function WebsitesSection({ websites, setWebsites }) {
             const { t } = useContext(LanguageContext);
             const [showAddModal, setShowAddModal] = useState(false);
+            const [showPixelModal, setShowPixelModal] = useState(false);
+            const [newSiteId, setNewSiteId] = useState(null);
             const [searchQuery, setSearchQuery] = useState('');
             const [filterLang, setFilterLang] = useState('all');
 
@@ -937,6 +939,7 @@
                                 <tr>
                                     <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">{t.siteName}</th>
                                     <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">{t.siteUrl}</th>
+                                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Site ID</th>
                                     <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">{t.language}</th>
                                     <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">{t.owner}</th>
                                     <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">{t.seoScore}</th>
@@ -949,6 +952,24 @@
                                     <tr key={site.id} className={`border-t border-gray-100 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
                                         <td className="py-4 px-6 font-medium text-gray-900">{site.name}</td>
                                         <td className="py-4 px-6 text-gray-600">{site.url}</td>
+                                        <td className="py-4 px-6">
+                                            <div className="flex items-center space-x-2">
+                                                <code className="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs font-mono">
+                                                    {site.id || site._id || `site_${site.name.toLowerCase().replace(/\s+/g, '_')}`}
+                                                </code>
+                                                <button
+                                                    onClick={() => {
+                                                        const siteId = site.id || site._id || `site_${site.name.toLowerCase().replace(/\s+/g, '_')}`;
+                                                        navigator.clipboard.writeText(siteId);
+                                                        alert('Site ID copié ! ✅');
+                                                    }}
+                                                    className="text-blue-600 hover:text-blue-700 text-xs"
+                                                    title="Copier le Site ID"
+                                                >
+                                                    📋
+                                                </button>
+                                            </div>
+                                        </td>
                                         <td className="py-4 px-6">
                                             <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
                                                 {site.language.toUpperCase()}
@@ -978,6 +999,49 @@
                                         </td>
                                         <td className="py-4 px-6">
                                             <div className="flex space-x-2">
+                                                <button 
+                                                    onClick={() => {
+                                                        const siteId = site.id || site._id || `site_${site.name.toLowerCase().replace(/\s+/g, '_')}`;
+                                                        const pixelCode = `<script>
+(function() {
+    var config = {
+        siteId: '${siteId}',
+        apiEndpoint: '${API_URL}',
+        autoOptimize: true
+    };
+    
+    // Tracking pixel
+    var img = new Image(1,1);
+    img.src = config.apiEndpoint + '/api/tracking/pixel?site=' + config.siteId + 
+              '&url=' + encodeURIComponent(window.location.href) + 
+              '&ref=' + encodeURIComponent(document.referrer) +
+              '&t=' + Date.now();
+    
+    // Auto-optimization
+    if (config.autoOptimize) {
+        window.addEventListener('load', function() {
+            fetch(config.apiEndpoint + '/api/tracking/page', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    siteId: config.siteId,
+                    url: window.location.href,
+                    title: document.title,
+                    html: document.documentElement.outerHTML
+                })
+            });
+        });
+    }
+})();
+</script>`;
+                                                        navigator.clipboard.writeText(pixelCode);
+                                                        alert('Code pixel copié ! Collez-le avant la balise </head> de votre site. ✅');
+                                                    }}
+                                                    className="text-green-600 hover:text-green-700 px-2 py-1 rounded hover:bg-green-50" 
+                                                    title="Copier le code pixel"
+                                                >
+                                                    📟
+                                                </button>
                                                 <button className="text-blue-600 hover:text-blue-700">✏️</button>
                                                 <button className="text-red-600 hover:text-red-700">🗑️</button>
                                             </div>
@@ -993,8 +1057,23 @@
                         <AddSiteModal
                             onClose={() => setShowAddModal(false)}
                             onAdd={(site) => {
-                                setWebsites([...websites, { ...site, id: websites.length + 1 }]);
+                                const siteWithId = { ...site, id: site.id || site._id || `site_${Date.now()}` };
+                                setWebsites([...websites, siteWithId]);
                                 setShowAddModal(false);
+                                setNewSiteId(siteWithId.id);
+                                setShowPixelModal(true);
+                            }}
+                        />
+                    )}
+
+                    {/* Pixel Code Modal */}
+                    {showPixelModal && newSiteId && (
+                        <PixelCodeModal
+                            siteId={newSiteId}
+                            apiUrl={API_URL}
+                            onClose={() => {
+                                setShowPixelModal(false);
+                                setNewSiteId(null);
                             }}
                         />
                     )}
@@ -1079,6 +1158,153 @@
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            );
+        }
+
+        // Pixel Code Modal Component
+        function PixelCodeModal({ siteId, apiUrl, onClose }) {
+            const [copied, setCopied] = useState(false);
+            
+            const pixelCode = `<script>
+(function() {
+    var config = {
+        siteId: '${siteId}',
+        apiEndpoint: '${apiUrl}',
+        autoOptimize: true
+    };
+    
+    // Tracking pixel
+    var img = new Image(1,1);
+    img.src = config.apiEndpoint + '/api/tracking/pixel?site=' + config.siteId + 
+              '&url=' + encodeURIComponent(window.location.href) + 
+              '&ref=' + encodeURIComponent(document.referrer) +
+              '&t=' + Date.now();
+    
+    // Auto-optimization
+    if (config.autoOptimize) {
+        window.addEventListener('load', function() {
+            fetch(config.apiEndpoint + '/api/tracking/page', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    siteId: config.siteId,
+                    url: window.location.href,
+                    title: document.title,
+                    html: document.documentElement.outerHTML
+                })
+            });
+        });
+    }
+})();
+</script>`;
+
+            const copyToClipboard = () => {
+                navigator.clipboard.writeText(pixelCode);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 3000);
+            };
+
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-2xl font-bold text-gray-900">🎉 Site créé avec succès !</h3>
+                            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">×</button>
+                        </div>
+
+                        <div className="space-y-6">
+                            {/* Site ID */}
+                            <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm font-medium text-green-800 mb-1">Votre Site ID :</p>
+                                        <code className="text-lg font-mono font-bold text-green-900">{siteId}</code>
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(siteId);
+                                            alert('Site ID copié ! ✅');
+                                        }}
+                                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                                    >
+                                        📋 Copier
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Instructions */}
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <h4 className="font-bold text-blue-900 mb-2">📝 Installation du Pixel de Tracking :</h4>
+                                <ol className="list-decimal list-inside space-y-2 text-sm text-blue-800">
+                                    <li>Copiez le code ci-dessous</li>
+                                    <li>Collez-le dans votre site web <strong>AVANT la balise &lt;/head&gt;</strong></li>
+                                    <li>Le tracking commencera automatiquement</li>
+                                </ol>
+                            </div>
+
+                            {/* Pixel Code */}
+                            <div>
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="block text-sm font-medium text-gray-700">Code du Pixel :</label>
+                                    <button
+                                        onClick={copyToClipboard}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                                            copied 
+                                                ? 'bg-green-500 text-white' 
+                                                : 'bg-blue-600 text-white hover:bg-blue-700'
+                                        }`}
+                                    >
+                                        {copied ? '✅ Copié !' : '📋 Copier le Code'}
+                                    </button>
+                                </div>
+                                <div className="relative">
+                                    <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-xs font-mono">
+{pixelCode}
+                                    </pre>
+                                </div>
+                            </div>
+
+                            {/* Platform-specific instructions */}
+                            <div className="border-t pt-4">
+                                <h4 className="font-bold text-gray-900 mb-3">📚 Installation selon la plateforme :</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="bg-gray-50 p-4 rounded-lg">
+                                        <h5 className="font-bold text-gray-900 mb-2">WordPress</h5>
+                                        <p className="text-sm text-gray-600">
+                                            Apparence → Éditeur de thème → header.php<br/>
+                                            Coller avant &lt;/head&gt;
+                                        </p>
+                                    </div>
+                                    <div className="bg-gray-50 p-4 rounded-lg">
+                                        <h5 className="font-bold text-gray-900 mb-2">Shopify</h5>
+                                        <p className="text-sm text-gray-600">
+                                            Boutique en ligne → Thèmes → Actions → Modifier le code<br/>
+                                            theme.liquid → Coller avant &lt;/head&gt;
+                                        </p>
+                                    </div>
+                                    <div className="bg-gray-50 p-4 rounded-lg">
+                                        <h5 className="font-bold text-gray-900 mb-2">HTML</h5>
+                                        <p className="text-sm text-gray-600">
+                                            Ouvrir index.html<br/>
+                                            Coller avant &lt;/head&gt;<br/>
+                                            Sauvegarder et uploader
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Close button */}
+                            <div className="flex justify-end">
+                                <button
+                                    onClick={onClose}
+                                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-purple-700"
+                                >
+                                    Terminé
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             );
