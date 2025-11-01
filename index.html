@@ -3,28 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEO Automation Platform - Multi-User Enterprise</title>
+    <title>SEO Platform - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body class="bg-gray-50">
-    <div id="root"></div>
+<body class="bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 min-h-screen flex items-center justify-center p-4">
+    
+    <!-- Login Container -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-3xl font-bold">
+                S
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900">SEO Platform</h1>
+            <p class="text-gray-600 mt-2">Multi-User Enterprise</p>
+        </div>
 
-    <script type="text/babel">
-        const { useState, useEffect, createContext, useContext } = React;
+        <!-- Error Message -->
+        <div id="errorMessage" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+        </div>
 
+        <!-- Success Message -->
+        <div id="successMessage" class="hidden bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex mb-6 bg-gray-100 rounded-lg p-1">
+            <button id="loginTab" onclick="showLogin()" class="flex-1 py-2 px-4 rounded-md font-medium transition-all bg-white text-blue-600 shadow-sm">
+                Login
+            </button>
+            <button id="registerTab" onclick="showRegister()" class="flex-1 py-2 px-4 rounded-md font-medium transition-all text-gray-600 hover:text-gray-900">
+                Register
+            </button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input 
+                    type="email" 
+                    id="loginEmail" 
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="your@email.com"
+                >
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                <input 
+                    type="password" 
+                    id="loginPassword" 
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="••••••••"
+                >
+            </div>
+            <button 
+                type="submit" 
+                id="loginButton"
+                class="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all"
+            >
+                Sign In
+            </button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" class="space-y-4 hidden">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                    <input 
+                        type="text" 
+                        id="registerFirstName" 
+                        required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="John"
+                    >
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                    <input 
+                        type="text" 
+                        id="registerLastName" 
+                        required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Doe"
+                    >
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input 
+                    type="email" 
+                    id="registerEmail" 
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="your@email.com"
+                >
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Organization Name</label>
+                <input 
+                    type="text" 
+                    id="registerOrganization" 
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="My Company"
+                >
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                <input 
+                    type="password" 
+                    id="registerPassword" 
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="••••••••"
+                >
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                <input 
+                    type="password" 
+                    id="registerConfirmPassword" 
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="••••••••"
+                >
+            </div>
+            <button 
+                type="submit" 
+                id="registerButton"
+                class="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all"
+            >
+                Create Account
+            </button>
+        </form>
+
+        <!-- Footer -->
+        <div class="mt-6 text-center text-sm text-gray-600">
+            <p>Powered by <span class="font-semibold text-blue-600">Claude AI</span></p>
+        </div>
+    </div>
+
+    <script>
         // ==========================================
-        // API CONFIGURATION
+        // CONFIGURATION API
         // ==========================================
         
-        // ⚠️  IMPORTANT: Remplacez cette URL par votre URL Railway !
-        // Exemple: https://votre-app-production.up.railway.app
-        const API_URL = 'https://alteaseo-production.up.railway.app'; // ⬅️ À REMPLACER !
+        // ⚠️ IMPORTANT: Remplacez par votre URL Railway !
+        const API_URL = 'https://alteaseo-production.up.railway.app';  // ← CHANGEZ CETTE URL !
         
-        // API Helper Functions
-        const apiCall = async (endpoint, options = {}) => {
+        // ==========================================
+        // UI FUNCTIONS
+        // ==========================================
+        
+        function showLogin() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('loginTab').classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+            document.getElementById('loginTab').classList.remove('text-gray-600');
+            document.getElementById('registerTab').classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+            document.getElementById('registerTab').classList.add('text-gray-600');
+            hideMessages();
+        }
+        
+        function showRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+            document.getElementById('registerTab').classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+            document.getElementById('registerTab').classList.remove('text-gray-600');
+            document.getElementById('loginTab').classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+            document.getElementById('loginTab').classList.add('text-gray-600');
+            hideMessages();
+        }
+        
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = message;
+            errorEl.classList.remove('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+        }
+        
+        function showSuccess(message) {
+            const successEl = document.getElementById('successMessage');
+            successEl.textContent = message;
+            successEl.classList.remove('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+        }
+        
+        function hideMessages() {
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+        }
+        
+        function setLoading(formId, loading) {
+            const button = document.querySelector(`#${formId} button[type="submit"]`);
+            if (loading) {
+                button.disabled = true;
+                button.innerHTML = '<span class="animate-pulse">Loading...</span>';
+            } else {
+                button.disabled = false;
+                button.innerHTML = formId === 'loginForm' ? 'Sign In' : 'Create Account';
+            }
+        }
+        
+        // ==========================================
+        // API FUNCTIONS
+        // ==========================================
+        
+        async function apiCall(endpoint, options = {}) {
             const token = localStorage.getItem('token');
             const headers = {
                 'Content-Type': 'application/json',
@@ -49,1422 +238,125 @@
                 console.error('API Error:', error);
                 throw error;
             }
-        };
-
-        // ==========================================
-        // CONTEXT & STATE MANAGEMENT
-        // ==========================================
-
-        const AuthContext = createContext();
-        const LanguageContext = createContext();
-
-        // Translations
-        const translations = {
-            en: {
-                appName: 'SEO Automation Platform',
-                dashboard: 'Dashboard',
-                sites: 'Websites',
-                content: 'AI Content',
-                automation: 'Automation',
-                users: 'Users',
-                settings: 'Settings',
-                logout: 'Logout',
-                login: 'Login',
-                register: 'Register',
-                welcome: 'Welcome',
-                totalSites: 'Total Websites',
-                activeUsers: 'Active Users',
-                contentGenerated: 'Content Generated',
-                optimizations: 'Optimizations',
-                addSite: 'Add Website',
-                editSite: 'Edit Website',
-                deleteSite: 'Delete Website',
-                siteUrl: 'Website URL',
-                siteName: 'Site Name',
-                language: 'Language',
-                owner: 'Owner',
-                status: 'Status',
-                actions: 'Actions',
-                save: 'Save',
-                cancel: 'Cancel',
-                email: 'Email',
-                password: 'Password',
-                confirmPassword: 'Confirm Password',
-                firstName: 'First Name',
-                lastName: 'Last Name',
-                role: 'Role',
-                admin: 'Administrator',
-                user: 'User',
-                viewer: 'Viewer',
-                active: 'Active',
-                inactive: 'Inactive',
-                generate: 'Generate',
-                topic: 'Topic',
-                keywords: 'Keywords',
-                contentType: 'Content Type',
-                blog: 'Blog Post',
-                product: 'Product Description',
-                meta: 'Meta Tags',
-                seoScore: 'SEO Score',
-                pages: 'Pages',
-                visitors: 'Visitors',
-                searchPlaceholder: 'Search...',
-                filterBy: 'Filter by',
-                sortBy: 'Sort by',
-                selectLanguage: 'Select Language',
-                myAccount: 'My Account',
-                teamMembers: 'Team Members',
-                inviteUser: 'Invite User',
-                permissions: 'Permissions',
-                apiKeys: 'API Keys',
-                billing: 'Billing',
-                plan: 'Plan',
-                usage: 'Usage',
-                upgrade: 'Upgrade'
-            },
-            fr: {
-                appName: 'Plateforme SEO Automation',
-                dashboard: 'Tableau de bord',
-                sites: 'Sites Web',
-                content: 'Contenu IA',
-                automation: 'Automatisation',
-                users: 'Utilisateurs',
-                settings: 'Paramètres',
-                logout: 'Déconnexion',
-                login: 'Connexion',
-                register: 'S\'inscrire',
-                welcome: 'Bienvenue',
-                totalSites: 'Total Sites Web',
-                activeUsers: 'Utilisateurs Actifs',
-                contentGenerated: 'Contenu Généré',
-                optimizations: 'Optimisations',
-                addSite: 'Ajouter un Site',
-                editSite: 'Modifier le Site',
-                deleteSite: 'Supprimer le Site',
-                siteUrl: 'URL du Site',
-                siteName: 'Nom du Site',
-                language: 'Langue',
-                owner: 'Propriétaire',
-                status: 'Statut',
-                actions: 'Actions',
-                save: 'Enregistrer',
-                cancel: 'Annuler',
-                email: 'Email',
-                password: 'Mot de passe',
-                confirmPassword: 'Confirmer le mot de passe',
-                firstName: 'Prénom',
-                lastName: 'Nom',
-                role: 'Rôle',
-                admin: 'Administrateur',
-                user: 'Utilisateur',
-                viewer: 'Observateur',
-                active: 'Actif',
-                inactive: 'Inactif',
-                generate: 'Générer',
-                topic: 'Sujet',
-                keywords: 'Mots-clés',
-                contentType: 'Type de Contenu',
-                blog: 'Article de Blog',
-                product: 'Description Produit',
-                meta: 'Balises Meta',
-                seoScore: 'Score SEO',
-                pages: 'Pages',
-                visitors: 'Visiteurs',
-                searchPlaceholder: 'Rechercher...',
-                filterBy: 'Filtrer par',
-                sortBy: 'Trier par',
-                selectLanguage: 'Sélectionner la langue',
-                myAccount: 'Mon Compte',
-                teamMembers: 'Membres de l\'équipe',
-                inviteUser: 'Inviter un utilisateur',
-                permissions: 'Permissions',
-                apiKeys: 'Clés API',
-                billing: 'Facturation',
-                plan: 'Plan',
-                usage: 'Utilisation',
-                upgrade: 'Mettre à niveau'
-            },
-            es: {
-                appName: 'Plataforma de Automatización SEO',
-                dashboard: 'Panel de Control',
-                sites: 'Sitios Web',
-                content: 'Contenido IA',
-                automation: 'Automatización',
-                users: 'Usuarios',
-                settings: 'Configuración',
-                logout: 'Cerrar Sesión',
-                login: 'Iniciar Sesión',
-                register: 'Registrarse',
-                welcome: 'Bienvenido',
-                totalSites: 'Total de Sitios',
-                activeUsers: 'Usuarios Activos',
-                contentGenerated: 'Contenido Generado',
-                optimizations: 'Optimizaciones',
-                addSite: 'Agregar Sitio',
-                editSite: 'Editar Sitio',
-                deleteSite: 'Eliminar Sitio',
-                siteUrl: 'URL del Sitio',
-                siteName: 'Nombre del Sitio',
-                language: 'Idioma',
-                owner: 'Propietario',
-                status: 'Estado',
-                actions: 'Acciones',
-                save: 'Guardar',
-                cancel: 'Cancelar',
-                email: 'Correo',
-                password: 'Contraseña',
-                confirmPassword: 'Confirmar Contraseña',
-                firstName: 'Nombre',
-                lastName: 'Apellido',
-                role: 'Rol',
-                admin: 'Administrador',
-                user: 'Usuario',
-                viewer: 'Observador',
-                active: 'Activo',
-                inactive: 'Inactivo',
-                generate: 'Generar',
-                topic: 'Tema',
-                keywords: 'Palabras Clave',
-                contentType: 'Tipo de Contenido',
-                blog: 'Artículo de Blog',
-                product: 'Descripción de Producto',
-                meta: 'Meta Etiquetas',
-                seoScore: 'Puntuación SEO',
-                pages: 'Páginas',
-                visitors: 'Visitantes',
-                searchPlaceholder: 'Buscar...',
-                filterBy: 'Filtrar por',
-                sortBy: 'Ordenar por',
-                selectLanguage: 'Seleccionar Idioma',
-                myAccount: 'Mi Cuenta',
-                teamMembers: 'Miembros del Equipo',
-                inviteUser: 'Invitar Usuario',
-                permissions: 'Permisos',
-                apiKeys: 'Claves API',
-                billing: 'Facturación',
-                plan: 'Plan',
-                usage: 'Uso',
-                upgrade: 'Actualizar'
-            },
-            de: {
-                appName: 'SEO Automatisierungsplattform',
-                dashboard: 'Dashboard',
-                sites: 'Webseiten',
-                content: 'KI-Inhalt',
-                automation: 'Automatisierung',
-                users: 'Benutzer',
-                settings: 'Einstellungen',
-                logout: 'Abmelden',
-                login: 'Anmelden',
-                register: 'Registrieren',
-                welcome: 'Willkommen',
-                totalSites: 'Gesamt Webseiten',
-                activeUsers: 'Aktive Benutzer',
-                contentGenerated: 'Generierter Inhalt',
-                optimizations: 'Optimierungen',
-                addSite: 'Webseite hinzufügen',
-                editSite: 'Webseite bearbeiten',
-                deleteSite: 'Webseite löschen',
-                siteUrl: 'Webseiten-URL',
-                siteName: 'Seitenname',
-                language: 'Sprache',
-                owner: 'Eigentümer',
-                status: 'Status',
-                actions: 'Aktionen',
-                save: 'Speichern',
-                cancel: 'Abbrechen',
-                email: 'E-Mail',
-                password: 'Passwort',
-                confirmPassword: 'Passwort bestätigen',
-                firstName: 'Vorname',
-                lastName: 'Nachname',
-                role: 'Rolle',
-                admin: 'Administrator',
-                user: 'Benutzer',
-                viewer: 'Betrachter',
-                active: 'Aktiv',
-                inactive: 'Inaktiv',
-                generate: 'Generieren',
-                topic: 'Thema',
-                keywords: 'Schlüsselwörter',
-                contentType: 'Inhaltstyp',
-                blog: 'Blog-Beitrag',
-                product: 'Produktbeschreibung',
-                meta: 'Meta-Tags',
-                seoScore: 'SEO-Score',
-                pages: 'Seiten',
-                visitors: 'Besucher',
-                searchPlaceholder: 'Suchen...',
-                filterBy: 'Filtern nach',
-                sortBy: 'Sortieren nach',
-                selectLanguage: 'Sprache auswählen',
-                myAccount: 'Mein Konto',
-                teamMembers: 'Teammitglieder',
-                inviteUser: 'Benutzer einladen',
-                permissions: 'Berechtigungen',
-                apiKeys: 'API-Schlüssel',
-                billing: 'Abrechnung',
-                plan: 'Plan',
-                usage: 'Nutzung',
-                upgrade: 'Upgrade'
-            }
-        };
-
-        // ==========================================
-        // MAIN APP COMPONENT
-        // ==========================================
-
-        function App() {
-            const [currentUser, setCurrentUser] = useState(null);
-            const [language, setLanguage] = useState('en');
-            const [isAuthenticated, setIsAuthenticated] = useState(false);
-            const [loading, setLoading] = useState(true);
-
-            useEffect(() => {
-                // Check for stored auth and validate token
-                const checkAuth = async () => {
-                    const storedUser = localStorage.getItem('user');
-                    const storedToken = localStorage.getItem('token');
-                    const storedLang = localStorage.getItem('language') || 'en';
-                    
-                    if (storedUser && storedToken) {
-                        try {
-                            // Validate token with API
-                            const response = await apiCall('/api/auth/me');
-                            if (response.success) {
-                                setCurrentUser(response.user);
-                                setIsAuthenticated(true);
-                            } else {
-                                // Token invalid, clear storage
-                                localStorage.removeItem('user');
-                                localStorage.removeItem('token');
-                            }
-                        } catch (error) {
-                            // Token validation failed
-                            localStorage.removeItem('user');
-                            localStorage.removeItem('token');
-                        }
-                    }
-                    
-                    setLanguage(storedLang);
-                    setLoading(false);
-                };
-
-                checkAuth();
-            }, []);
-
-            const login = (user, token) => {
-                setCurrentUser(user);
-                setIsAuthenticated(true);
-                localStorage.setItem('user', JSON.stringify(user));
-                localStorage.setItem('token', token);
-            };
-
-            const logout = () => {
-                setCurrentUser(null);
-                setIsAuthenticated(false);
-                localStorage.removeItem('user');
-                localStorage.removeItem('token');
-            };
-
-            const changeLanguage = (lang) => {
-                setLanguage(lang);
-                localStorage.setItem('language', lang);
-            };
-
-            if (loading) {
-                return (
-                    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                        <div className="text-center">
-                            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                            <p className="text-gray-600">Loading...</p>
-                        </div>
-                    </div>
-                );
-            }
-
-            return (
-                <AuthContext.Provider value={{ currentUser, login, logout, isAuthenticated }}>
-                    <LanguageContext.Provider value={{ language, changeLanguage, t: translations[language] }}>
-                        {isAuthenticated ? <MainPlatform /> : <LoginPage />}
-                    </LanguageContext.Provider>
-                </AuthContext.Provider>
-            );
         }
-
+        
         // ==========================================
-        // LOGIN PAGE
+        // AUTH FUNCTIONS
         // ==========================================
-
-        function LoginPage() {
-            const [isLogin, setIsLogin] = useState(true);
-            const [formData, setFormData] = useState({
-                email: '',
-                password: '',
-                firstName: '',
-                lastName: '',
-                organizationName: '',
-                confirmPassword: ''
-            });
-            const [loading, setLoading] = useState(false);
-            const [error, setError] = useState('');
-            const { login } = useContext(AuthContext);
-            const { language, changeLanguage, t } = useContext(LanguageContext);
-
-            const handleSubmit = async (e) => {
-                e.preventDefault();
-                setError('');
-                setLoading(true);
-
-                try {
-                    if (isLogin) {
-                        // Login request
-                        const response = await apiCall('/api/auth/login', {
-                            method: 'POST',
-                            body: JSON.stringify({
-                                email: formData.email,
-                                password: formData.password
-                            })
-                        });
-
-                        if (response.success) {
-                            login(response.user, response.token);
-                        } else {
-                            setError(response.message || 'Login failed');
-                        }
-                    } else {
-                        // Register request
-                        if (formData.password !== formData.confirmPassword) {
-                            setError('Passwords do not match');
-                            setLoading(false);
-                            return;
-                        }
-
-                        const response = await apiCall('/api/auth/register', {
-                            method: 'POST',
-                            body: JSON.stringify({
-                                email: formData.email,
-                                password: formData.password,
-                                firstName: formData.firstName,
-                                lastName: formData.lastName,
-                                organizationName: formData.organizationName || `${formData.firstName}'s Organization`
-                            })
-                        });
-
-                        if (response.success) {
-                            login(response.user, response.token);
-                        } else {
-                            setError(response.message || 'Registration failed');
-                        }
-                    }
-                } catch (error) {
-                    setError(error.message || 'Connection error. Please try again.');
-                } finally {
-                    setLoading(false);
-                }
-            };
-
-            return (
-                <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 flex items-center justify-center p-4">
-                    {/* Language Selector */}
-                    <div className="absolute top-4 right-4">
-                        <select
-                            value={language}
-                            onChange={(e) => changeLanguage(e.target.value)}
-                            className="px-4 py-2 bg-white bg-opacity-20 text-white rounded-lg backdrop-blur border border-white border-opacity-30"
-                        >
-                            <option value="en">🇬🇧 English</option>
-                            <option value="fr">🇫🇷 Français</option>
-                            <option value="es">🇪🇸 Español</option>
-                            <option value="de">🇩🇪 Deutsch</option>
-                        </select>
-                    </div>
-
-                    <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-                        <div className="text-center mb-8">
-                            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl mx-auto mb-4 flex items-center justify-center">
-                                <span className="text-white font-bold text-2xl">AI</span>
-                            </div>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t.appName}</h1>
-                            <p className="text-gray-600">{isLogin ? t.login : t.register}</p>
-                        </div>
-
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            {!isLogin && (
-                                <>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <input
-                                            type="text"
-                                            placeholder={t.firstName}
-                                            value={formData.firstName}
-                                            onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                                            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            required
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder={t.lastName}
-                                            value={formData.lastName}
-                                            onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                                            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            required
-                                        />
-                                    </div>
-                                    <input
-                                        type="text"
-                                        placeholder="Organization Name (Optional)"
-                                        value={formData.organizationName}
-                                        onChange={(e) => setFormData({...formData, organizationName: e.target.value})}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    />
-                                </>
-                            )}
-                            
-                            <input
-                                type="email"
-                                placeholder={t.email}
-                                value={formData.email}
-                                onChange={(e) => setFormData({...formData, email: e.target.value})}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                required
-                            />
-                            
-                            <input
-                                type="password"
-                                placeholder={t.password}
-                                value={formData.password}
-                                onChange={(e) => setFormData({...formData, password: e.target.value})}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                required
-                            />
-
-                            {!isLogin && (
-                                <input
-                                    type="password"
-                                    placeholder={t.confirmPassword}
-                                    value={formData.confirmPassword}
-                                    onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    required
-                                />
-                            )}
-
-                            {error && (
-                                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                                    {error}
-                                </div>
-                            )}
-
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {loading ? 'Loading...' : (isLogin ? t.login : t.register)}
-                            </button>
-                        </form>
-
-                        <div className="mt-6 text-center">
-                            <button
-                                onClick={() => setIsLogin(!isLogin)}
-                                className="text-blue-600 hover:text-blue-700 font-medium"
-                            >
-                                {isLogin ? t.register : t.login}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        // ==========================================
-        // MAIN PLATFORM
-        // ==========================================
-
-        function MainPlatform() {
-            const [activeSection, setActiveSection] = useState('dashboard');
-            const [websites, setWebsites] = useState([]);
-            const [users, setUsers] = useState([]);
-            const [loading, setLoading] = useState(true);
-            const [error, setError] = useState('');
-            const { currentUser, logout } = useContext(AuthContext);
-            const { language, changeLanguage, t } = useContext(LanguageContext);
-
-            useEffect(() => {
-                loadData();
-            }, []);
-
-            const loadData = async () => {
-                setLoading(true);
-                setError('');
-                
-                try {
-                    // Load websites from API
-                    const websitesResponse = await apiCall('/api/websites');
-                    if (websitesResponse.success) {
-                        setWebsites(websitesResponse.websites || []);
-                    }
-
-                    // Load users from API (if admin)
-                    if (currentUser.role === 'admin') {
-                        try {
-                            const usersResponse = await apiCall('/api/users');
-                            if (usersResponse.success) {
-                                setUsers(usersResponse.users || []);
-                            }
-                        } catch (err) {
-                            console.log('Could not load users:', err);
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error loading data:', error);
-                    setError('Failed to load data. Using offline mode.');
-                    // Fallback to empty arrays
-                    setWebsites([]);
-                    setUsers([]);
-                } finally {
-                    setLoading(false);
-                }
-            };
-
-            const addWebsite = async (websiteData) => {
-                try {
-                    const response = await apiCall('/api/websites', {
-                        method: 'POST',
-                        body: JSON.stringify(websiteData)
-                    });
-
-                    if (response.success) {
-                        setWebsites([...websites, response.website]);
-                        return true;
-                    }
-                    return false;
-                } catch (error) {
-                    console.error('Error adding website:', error);
-                    return false;
-                }
-            };
-
-            const updateWebsite = async (websiteId, websiteData) => {
-                try {
-                    const response = await apiCall(`/api/websites/${websiteId}`, {
-                        method: 'PUT',
-                        body: JSON.stringify(websiteData)
-                    });
-
-                    if (response.success) {
-                        setWebsites(websites.map(w => w._id === websiteId ? response.website : w));
-                        return true;
-                    }
-                    return false;
-                } catch (error) {
-                    console.error('Error updating website:', error);
-                    return false;
-                }
-            };
-
-            const deleteWebsite = async (websiteId) => {
-                try {
-                    const response = await apiCall(`/api/websites/${websiteId}`, {
-                        method: 'DELETE'
-                    });
-
-                    if (response.success) {
-                        setWebsites(websites.filter(w => w._id !== websiteId));
-                        return true;
-                    }
-                    return false;
-                } catch (error) {
-                    console.error('Error deleting website:', error);
-                    return false;
-                }
-            };
-
-            if (loading) {
-                return (
-                    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                        <div className="text-center">
-                            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                            <p className="text-gray-600">Loading your dashboard...</p>
-                        </div>
-                    </div>
-                );
-            }
-
-            return (
-                <div className="min-h-screen bg-gray-50">
-                    {/* Header */}
-                    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-4">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                                        <span className="text-white font-bold text-xl">AI</span>
-                                    </div>
-                                    <div>
-                                        <h1 className="text-xl font-bold text-gray-900">{t.appName}</h1>
-                                        <p className="text-sm text-gray-500">{t.welcome}, {currentUser.firstName}</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center space-x-4">
-                                    {/* Language Selector */}
-                                    <select
-                                        value={language}
-                                        onChange={(e) => changeLanguage(e.target.value)}
-                                        className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        <option value="en">🇬🇧 EN</option>
-                                        <option value="fr">🇫🇷 FR</option>
-                                        <option value="es">🇪🇸 ES</option>
-                                        <option value="de">🇩🇪 DE</option>
-                                    </select>
-
-                                    {/* User Menu */}
-                                    <div className="flex items-center space-x-3">
-                                        <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium">
-                                            {currentUser.firstName[0]}{currentUser.lastName[0]}
-                                        </div>
-                                        <button
-                                            onClick={logout}
-                                            className="px-4 py-2 text-sm text-red-600 hover:text-red-700 font-medium"
-                                        >
-                                            {t.logout}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </header>
-
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                        {/* Navigation Tabs */}
-                        <nav className="flex space-x-4 mb-8 overflow-x-auto">
-                            {[
-                                { id: 'dashboard', label: t.dashboard, icon: '📊' },
-                                { id: 'sites', label: t.sites, icon: '🌐' },
-                                { id: 'content', label: t.content, icon: '✍️' },
-                                { id: 'automation', label: t.automation, icon: '⚡' },
-                                { id: 'users', label: t.users, icon: '👥', adminOnly: true },
-                                { id: 'settings', label: t.settings, icon: '⚙️' }
-                            ].filter(tab => !tab.adminOnly || currentUser.role === 'admin').map(tab => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveSection(tab.id)}
-                                    className={`px-6 py-3 rounded-lg font-medium transition-all whitespace-nowrap ${
-                                        activeSection === tab.id
-                                            ? 'bg-white text-blue-600 shadow-md'
-                                            : 'text-gray-600 hover:bg-white hover:text-gray-900'
-                                    }`}
-                                >
-                                    <span className="mr-2">{tab.icon}</span>
-                                    {tab.label}
-                                </button>
-                            ))}
-                        </nav>
-
-                        {/* Content Sections */}
-                        {activeSection === 'dashboard' && (
-                            <DashboardSection websites={websites} users={users} />
-                        )}
-                        {activeSection === 'sites' && (
-                            <WebsitesSection websites={websites} setWebsites={setWebsites} />
-                        )}
-                        {activeSection === 'content' && (
-                            <ContentSection websites={websites} />
-                        )}
-                        {activeSection === 'automation' && (
-                            <AutomationSection />
-                        )}
-                        {activeSection === 'users' && currentUser.role === 'admin' && (
-                            <UsersSection users={users} setUsers={setUsers} />
-                        )}
-                        {activeSection === 'settings' && (
-                            <SettingsSection />
-                        )}
-                    </div>
-                </div>
-            );
-        }
-
-        // ==========================================
-        // DASHBOARD SECTION
-        // ==========================================
-
-        function DashboardSection({ websites, users }) {
-            const { t } = useContext(LanguageContext);
-
-            const stats = {
-                totalSites: websites.length,
-                activeUsers: users.filter(u => u.status === 'active').length,
-                contentGenerated: 127,
-                optimizations: 1543
-            };
-
-            return (
-                <div className="space-y-6">
-                    {/* Stats Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <StatCard
-                            title={t.totalSites}
-                            value={stats.totalSites}
-                            icon="🌐"
-                            color="blue"
-                        />
-                        <StatCard
-                            title={t.activeUsers}
-                            value={stats.activeUsers}
-                            icon="👥"
-                            color="green"
-                        />
-                        <StatCard
-                            title={t.contentGenerated}
-                            value={stats.contentGenerated}
-                            icon="✍️"
-                            color="purple"
-                        />
-                        <StatCard
-                            title={t.optimizations}
-                            value={stats.optimizations}
-                            icon="⚡"
-                            color="orange"
-                        />
-                    </div>
-
-                    {/* Websites Overview */}
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        <h2 className="text-xl font-bold text-gray-900 mb-6">{t.sites}</h2>
-                        <div className="space-y-4">
-                            {websites.map(site => (
-                                <div key={site.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all">
-                                    <div className="flex items-center space-x-4">
-                                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                            <span className="text-2xl">🌐</span>
-                                        </div>
-                                        <div>
-                                            <h3 className="font-bold text-gray-900">{site.name}</h3>
-                                            <p className="text-sm text-gray-600">{site.url}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center space-x-6">
-                                        <div className="text-center">
-                                            <div className="text-2xl font-bold text-gray-900">{site.seoScore}</div>
-                                            <div className="text-xs text-gray-500">{t.seoScore}</div>
-                                        </div>
-                                        <div className="text-center">
-                                            <div className="text-2xl font-bold text-gray-900">{site.pages}</div>
-                                            <div className="text-xs text-gray-500">{t.pages}</div>
-                                        </div>
-                                        <div className="text-center">
-                                            <div className="text-2xl font-bold text-gray-900">{site.visitors}</div>
-                                            <div className="text-xs text-gray-500">{t.visitors}</div>
-                                        </div>
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                            site.language === 'en' ? 'bg-blue-100 text-blue-700' :
-                                            site.language === 'fr' ? 'bg-purple-100 text-purple-700' :
-                                            site.language === 'es' ? 'bg-orange-100 text-orange-700' :
-                                            'bg-green-100 text-green-700'
-                                        }`}>
-                                            {site.language.toUpperCase()}
-                                        </span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        // ==========================================
-        // WEBSITES SECTION
-        // ==========================================
-
-        function WebsitesSection({ websites, setWebsites }) {
-            const { t } = useContext(LanguageContext);
-            const [showAddModal, setShowAddModal] = useState(false);
-            const [showPixelModal, setShowPixelModal] = useState(false);
-            const [newSiteId, setNewSiteId] = useState(null);
-            const [searchQuery, setSearchQuery] = useState('');
-            const [filterLang, setFilterLang] = useState('all');
-
-            const filteredWebsites = websites.filter(site => {
-                const matchesSearch = site.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                    site.url.toLowerCase().includes(searchQuery.toLowerCase());
-                const matchesLang = filterLang === 'all' || site.language === filterLang;
-                return matchesSearch && matchesLang;
-            });
-
-            return (
-                <div className="space-y-6">
-                    {/* Header with Actions */}
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-2xl font-bold text-gray-900">{t.sites}</h2>
-                            <button
-                                onClick={() => setShowAddModal(true)}
-                                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all"
-                            >
-                                + {t.addSite}
-                            </button>
-                        </div>
-
-                        {/* Filters */}
-                        <div className="flex space-x-4">
-                            <input
-                                type="text"
-                                placeholder={t.searchPlaceholder}
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                            />
-                            <select
-                                value={filterLang}
-                                onChange={(e) => setFilterLang(e.target.value)}
-                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="all">{t.language}: All</option>
-                                <option value="en">🇬🇧 English</option>
-                                <option value="fr">🇫🇷 Français</option>
-                                <option value="es">🇪🇸 Español</option>
-                                <option value="de">🇩🇪 Deutsch</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Websites Table */}
-                    <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                        <table className="w-full">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">{t.siteName}</th>
-                                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">{t.siteUrl}</th>
-                                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Site ID</th>
-                                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">{t.language}</th>
-                                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">{t.owner}</th>
-                                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">{t.seoScore}</th>
-                                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">{t.status}</th>
-                                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">{t.actions}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredWebsites.map((site, index) => (
-                                    <tr key={site.id} className={`border-t border-gray-100 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                                        <td className="py-4 px-6 font-medium text-gray-900">{site.name}</td>
-                                        <td className="py-4 px-6 text-gray-600">{site.url}</td>
-                                        <td className="py-4 px-6">
-                                            <div className="flex items-center space-x-2">
-                                                <code className="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs font-mono">
-                                                    {site.id || site._id || `site_${site.name.toLowerCase().replace(/\s+/g, '_')}`}
-                                                </code>
-                                                <button
-                                                    onClick={() => {
-                                                        const siteId = site.id || site._id || `site_${site.name.toLowerCase().replace(/\s+/g, '_')}`;
-                                                        navigator.clipboard.writeText(siteId);
-                                                        alert('Site ID copié ! ✅');
-                                                    }}
-                                                    className="text-blue-600 hover:text-blue-700 text-xs"
-                                                    title="Copier le Site ID"
-                                                >
-                                                    📋
-                                                </button>
-                                            </div>
-                                        </td>
-                                        <td className="py-4 px-6">
-                                            <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
-                                                {site.language.toUpperCase()}
-                                            </span>
-                                        </td>
-                                        <td className="py-4 px-6 text-gray-600">{site.ownerName}</td>
-                                        <td className="py-4 px-6">
-                                            <div className="flex items-center space-x-2">
-                                                <div className="w-16 bg-gray-200 rounded-full h-2">
-                                                    <div
-                                                        className={`h-2 rounded-full ${
-                                                            site.seoScore >= 80 ? 'bg-green-500' :
-                                                            site.seoScore >= 60 ? 'bg-yellow-500' : 'bg-red-500'
-                                                        }`}
-                                                        style={{ width: `${site.seoScore}%` }}
-                                                    ></div>
-                                                </div>
-                                                <span className="text-sm font-medium">{site.seoScore}</span>
-                                            </div>
-                                        </td>
-                                        <td className="py-4 px-6">
-                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                site.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                                            }`}>
-                                                {site.status === 'active' ? t.active : t.inactive}
-                                            </span>
-                                        </td>
-                                        <td className="py-4 px-6">
-                                            <div className="flex space-x-2">
-                                                <button 
-                                                    onClick={() => {
-                                                        const siteId = site.id || site._id || `site_${site.name.toLowerCase().replace(/\s+/g, '_')}`;
-                                                        const pixelCode = `<script>
-(function() {
-    var config = {
-        siteId: '${siteId}',
-        apiEndpoint: '${API_URL}',
-        autoOptimize: true
-    };
-    
-    // Tracking pixel
-    var img = new Image(1,1);
-    img.src = config.apiEndpoint + '/api/tracking/pixel?site=' + config.siteId + 
-              '&url=' + encodeURIComponent(window.location.href) + 
-              '&ref=' + encodeURIComponent(document.referrer) +
-              '&t=' + Date.now();
-    
-    // Auto-optimization
-    if (config.autoOptimize) {
-        window.addEventListener('load', function() {
-            fetch(config.apiEndpoint + '/api/tracking/page', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    siteId: config.siteId,
-                    url: window.location.href,
-                    title: document.title,
-                    html: document.documentElement.outerHTML
-                })
-            });
-        });
-    }
-})();
-</script>`;
-                                                        navigator.clipboard.writeText(pixelCode);
-                                                        alert('Code pixel copié ! Collez-le avant la balise </head> de votre site. ✅');
-                                                    }}
-                                                    className="text-green-600 hover:text-green-700 px-2 py-1 rounded hover:bg-green-50" 
-                                                    title="Copier le code pixel"
-                                                >
-                                                    📟
-                                                </button>
-                                                <button className="text-blue-600 hover:text-blue-700">✏️</button>
-                                                <button className="text-red-600 hover:text-red-700">🗑️</button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Add Site Modal */}
-                    {showAddModal && (
-                        <AddSiteModal
-                            onClose={() => setShowAddModal(false)}
-                            onAdd={(site) => {
-                                const siteWithId = { ...site, id: site.id || site._id || `site_${Date.now()}` };
-                                setWebsites([...websites, siteWithId]);
-                                setShowAddModal(false);
-                                setNewSiteId(siteWithId.id);
-                                setShowPixelModal(true);
-                            }}
-                        />
-                    )}
-
-                    {/* Pixel Code Modal */}
-                    {showPixelModal && newSiteId && (
-                        <PixelCodeModal
-                            siteId={newSiteId}
-                            apiUrl={API_URL}
-                            onClose={() => {
-                                setShowPixelModal(false);
-                                setNewSiteId(null);
-                            }}
-                        />
-                    )}
-                </div>
-            );
-        }
-
-        // Add Site Modal Component
-        function AddSiteModal({ onClose, onAdd }) {
-            const { t } = useContext(LanguageContext);
-            const [formData, setFormData] = useState({
-                name: '',
-                url: '',
-                language: 'en'
-            });
-
-            const handleSubmit = (e) => {
-                e.preventDefault();
-                onAdd({
-                    ...formData,
-                    ownerId: 1,
-                    ownerName: 'Current User',
-                    status: 'active',
-                    seoScore: 0,
-                    pages: 0,
-                    visitors: 0,
-                    lastSync: 'Never'
-                });
-            };
-
-            return (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl p-8 max-w-md w-full">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-6">{t.addSite}</h3>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">{t.siteName}</label>
-                                <input
-                                    type="text"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">{t.siteUrl}</label>
-                                <input
-                                    type="url"
-                                    value={formData.url}
-                                    onChange={(e) => setFormData({...formData, url: e.target.value})}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">{t.language}</label>
-                                <select
-                                    value={formData.language}
-                                    onChange={(e) => setFormData({...formData, language: e.target.value})}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="en">🇬🇧 English</option>
-                                    <option value="fr">🇫🇷 Français</option>
-                                    <option value="es">🇪🇸 Español</option>
-                                    <option value="de">🇩🇪 Deutsch</option>
-                                </select>
-                            </div>
-                            <div className="flex space-x-4 mt-6">
-                                <button
-                                    type="button"
-                                    onClick={onClose}
-                                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50"
-                                >
-                                    {t.cancel}
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700"
-                                >
-                                    {t.save}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            );
-        }
-
-        // Pixel Code Modal Component
-        function PixelCodeModal({ siteId, apiUrl, onClose }) {
-            const [copied, setCopied] = useState(false);
+        
+        async function handleLogin(e) {
+            e.preventDefault();
+            hideMessages();
+            setLoading('loginForm', true);
             
-            const pixelCode = `<script>
-(function() {
-    var config = {
-        siteId: '${siteId}',
-        apiEndpoint: '${apiUrl}',
-        autoOptimize: true
-    };
-    
-    // Tracking pixel
-    var img = new Image(1,1);
-    img.src = config.apiEndpoint + '/api/tracking/pixel?site=' + config.siteId + 
-              '&url=' + encodeURIComponent(window.location.href) + 
-              '&ref=' + encodeURIComponent(document.referrer) +
-              '&t=' + Date.now();
-    
-    // Auto-optimization
-    if (config.autoOptimize) {
-        window.addEventListener('load', function() {
-            fetch(config.apiEndpoint + '/api/tracking/page', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    siteId: config.siteId,
-                    url: window.location.href,
-                    title: document.title,
-                    html: document.documentElement.outerHTML
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await apiCall('/api/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+                
+                if (response.success) {
+                    // Save token and user data
+                    localStorage.setItem('token', response.token);
+                    localStorage.setItem('user', JSON.stringify(response.user));
+                    
+                    showSuccess('✅ Login successful! Redirecting to dashboard...');
+                    
+                    // Redirect to dashboard after 1 second
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';  // You'll need to create this
+                    }, 1000);
+                } else {
+                    showError(response.message || 'Login failed');
+                }
+            } catch (error) {
+                showError(error.message || 'Connection error. Please check your API URL and try again.');
+            } finally {
+                setLoading('loginForm', false);
+            }
+        }
+        
+        async function handleRegister(e) {
+            e.preventDefault();
+            hideMessages();
+            setLoading('registerForm', true);
+            
+            const firstName = document.getElementById('registerFirstName').value;
+            const lastName = document.getElementById('registerLastName').value;
+            const email = document.getElementById('registerEmail').value;
+            const organizationName = document.getElementById('registerOrganization').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                showError('Passwords do not match');
+                setLoading('registerForm', false);
+                return;
+            }
+            
+            try {
+                const response = await apiCall('/api/auth/register', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        firstName,
+                        lastName,
+                        email,
+                        password,
+                        organizationName
+                    })
+                });
+                
+                if (response.success) {
+                    // Save token and user data
+                    localStorage.setItem('token', response.token);
+                    localStorage.setItem('user', JSON.stringify(response.user));
+                    
+                    showSuccess('✅ Account created successfully! Redirecting to dashboard...');
+                    
+                    // Redirect to dashboard after 1 second
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';  // You'll need to create this
+                    }, 1000);
+                } else {
+                    showError(response.message || 'Registration failed');
+                }
+            } catch (error) {
+                showError(error.message || 'Connection error. Please check your API URL and try again.');
+            } finally {
+                setLoading('registerForm', false);
+            }
+        }
+        
+        // ==========================================
+        // EVENT LISTENERS
+        // ==========================================
+        
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        document.getElementById('registerForm').addEventListener('submit', handleRegister);
+        
+        // Check if already logged in
+        const token = localStorage.getItem('token');
+        if (token) {
+            // Verify token is still valid
+            apiCall('/api/auth/verify')
+                .then(response => {
+                    if (response.success) {
+                        window.location.href = '/dashboard.html';
+                    }
                 })
-            });
-        });
-    }
-})();
-</script>`;
-
-            const copyToClipboard = () => {
-                navigator.clipboard.writeText(pixelCode);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 3000);
-            };
-
-            return (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-2xl font-bold text-gray-900">🎉 Site créé avec succès !</h3>
-                            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">×</button>
-                        </div>
-
-                        <div className="space-y-6">
-                            {/* Site ID */}
-                            <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-medium text-green-800 mb-1">Votre Site ID :</p>
-                                        <code className="text-lg font-mono font-bold text-green-900">{siteId}</code>
-                                    </div>
-                                    <button
-                                        onClick={() => {
-                                            navigator.clipboard.writeText(siteId);
-                                            alert('Site ID copié ! ✅');
-                                        }}
-                                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                                    >
-                                        📋 Copier
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Instructions */}
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                <h4 className="font-bold text-blue-900 mb-2">📝 Installation du Pixel de Tracking :</h4>
-                                <ol className="list-decimal list-inside space-y-2 text-sm text-blue-800">
-                                    <li>Copiez le code ci-dessous</li>
-                                    <li>Collez-le dans votre site web <strong>AVANT la balise &lt;/head&gt;</strong></li>
-                                    <li>Le tracking commencera automatiquement</li>
-                                </ol>
-                            </div>
-
-                            {/* Pixel Code */}
-                            <div>
-                                <div className="flex items-center justify-between mb-2">
-                                    <label className="block text-sm font-medium text-gray-700">Code du Pixel :</label>
-                                    <button
-                                        onClick={copyToClipboard}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                                            copied 
-                                                ? 'bg-green-500 text-white' 
-                                                : 'bg-blue-600 text-white hover:bg-blue-700'
-                                        }`}
-                                    >
-                                        {copied ? '✅ Copié !' : '📋 Copier le Code'}
-                                    </button>
-                                </div>
-                                <div className="relative">
-                                    <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-xs font-mono">
-{pixelCode}
-                                    </pre>
-                                </div>
-                            </div>
-
-                            {/* Platform-specific instructions */}
-                            <div className="border-t pt-4">
-                                <h4 className="font-bold text-gray-900 mb-3">📚 Installation selon la plateforme :</h4>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="bg-gray-50 p-4 rounded-lg">
-                                        <h5 className="font-bold text-gray-900 mb-2">WordPress</h5>
-                                        <p className="text-sm text-gray-600">
-                                            Apparence → Éditeur de thème → header.php<br/>
-                                            Coller avant &lt;/head&gt;
-                                        </p>
-                                    </div>
-                                    <div className="bg-gray-50 p-4 rounded-lg">
-                                        <h5 className="font-bold text-gray-900 mb-2">Shopify</h5>
-                                        <p className="text-sm text-gray-600">
-                                            Boutique en ligne → Thèmes → Actions → Modifier le code<br/>
-                                            theme.liquid → Coller avant &lt;/head&gt;
-                                        </p>
-                                    </div>
-                                    <div className="bg-gray-50 p-4 rounded-lg">
-                                        <h5 className="font-bold text-gray-900 mb-2">HTML</h5>
-                                        <p className="text-sm text-gray-600">
-                                            Ouvrir index.html<br/>
-                                            Coller avant &lt;/head&gt;<br/>
-                                            Sauvegarder et uploader
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Close button */}
-                            <div className="flex justify-end">
-                                <button
-                                    onClick={onClose}
-                                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-purple-700"
-                                >
-                                    Terminé
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
+                .catch(() => {
+                    // Token invalid, clear storage
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                });
         }
-
-        // ==========================================
-        // CONTENT SECTION
-        // ==========================================
-
-        function ContentSection({ websites }) {
-            const { t, language } = useContext(LanguageContext);
-            const [selectedSite, setSelectedSite] = useState(websites[0]?.id || null);
-            const [contentType, setContentType] = useState('blog');
-            const [generating, setGenerating] = useState(false);
-            const [topic, setTopic] = useState('');
-
-            const generateContent = async () => {
-                setGenerating(true);
-                await new Promise(resolve => setTimeout(resolve, 3000));
-                setGenerating(false);
-                alert(`${t.contentType} ${t.generate}d successfully in ${language}!`);
-            };
-
-            return (
-                <div className="space-y-6">
-                    <div className="bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl p-8 text-white">
-                        <h2 className="text-2xl font-bold mb-2">{t.content}</h2>
-                        <p className="text-purple-100 mb-6">Multi-language AI content generation</p>
-                    </div>
-
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">{t.sites}</label>
-                                <select
-                                    value={selectedSite}
-                                    onChange={(e) => setSelectedSite(parseInt(e.target.value))}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-                                >
-                                    {websites.map(site => (
-                                        <option key={site.id} value={site.id}>
-                                            {site.name} ({site.language.toUpperCase()})
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">{t.contentType}</label>
-                                <select
-                                    value={contentType}
-                                    onChange={(e) => setContentType(e.target.value)}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-                                >
-                                    <option value="blog">{t.blog}</option>
-                                    <option value="product">{t.product}</option>
-                                    <option value="meta">{t.meta}</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">{t.topic}</label>
-                                <input
-                                    type="text"
-                                    value={topic}
-                                    onChange={(e) => setTopic(e.target.value)}
-                                    placeholder={t.topic}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-                                />
-                            </div>
-
-                            <button
-                                onClick={generateContent}
-                                disabled={generating}
-                                className="w-full bg-gradient-to-r from-purple-500 to-pink-600 text-white py-3 rounded-lg font-medium hover:from-purple-600 hover:to-pink-700 disabled:opacity-50"
-                            >
-                                {generating ? 'Generating...' : `${t.generate} ${t.content}`}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        // ==========================================
-        // AUTOMATION & USERS SECTIONS (Simplified)
-        // ==========================================
-
-        function AutomationSection() {
-            const { t } = useContext(LanguageContext);
-            return (
-                <div className="bg-white rounded-xl shadow-sm p-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">{t.automation}</h2>
-                    <p className="text-gray-600">Automation rules will appear here...</p>
-                </div>
-            );
-        }
-
-        function UsersSection({ users }) {
-            const { t } = useContext(LanguageContext);
-            return (
-                <div className="space-y-6">
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-2xl font-bold text-gray-900">{t.users}</h2>
-                            <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium">
-                                + {t.inviteUser}
-                            </button>
-                        </div>
-                        <div className="space-y-4">
-                            {users.map(user => (
-                                <div key={user.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                    <div className="flex items-center space-x-4">
-                                        <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium">
-                                            {user.firstName[0]}{user.lastName[0]}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-bold text-gray-900">{user.firstName} {user.lastName}</h3>
-                                            <p className="text-sm text-gray-600">{user.email}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center space-x-4">
-                                        <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
-                                            {t[user.role]}
-                                        </span>
-                                        <span className="text-sm text-gray-600">{user.sitesCount} {t.sites}</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        function SettingsSection() {
-            const { t } = useContext(LanguageContext);
-            return (
-                <div className="bg-white rounded-xl shadow-sm p-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">{t.settings}</h2>
-                    <p className="text-gray-600">Settings panel will appear here...</p>
-                </div>
-            );
-        }
-
-        // Helper Components
-        function StatCard({ title, value, icon, color }) {
-            return (
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-2xl">{icon}</span>
-                    </div>
-                    <div className="text-3xl font-bold text-gray-900 mb-1">{value}</div>
-                    <div className="text-sm text-gray-600">{title}</div>
-                </div>
-            );
-        }
-
-        // Render App
-        ReactDOM.render(<App />, document.getElementById('root'));
+        
+        console.log('✅ SEO Platform loaded successfully!');
+        console.log('⚠️  Remember to change API_URL to your Railway backend URL');
     </script>
 </body>
 </html>
