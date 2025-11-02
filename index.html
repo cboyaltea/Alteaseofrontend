@@ -832,6 +832,262 @@
         </div>
     </div>
 
+    <!-- Rule Editor Modal -->
+    <div id="ruleEditorModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 py-8">
+            <div class="modal-overlay fixed inset-0" onclick="window.closeRuleModal()"></div>
+            
+            <div class="bg-white rounded-xl shadow-2xl max-w-5xl w-full relative z-10 animate-fade-in">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-6 rounded-t-xl">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 id="modalTitle" class="text-3xl font-bold">Créer une Règle SEO</h3>
+                            <p class="text-blue-100 mt-2">Configurez vos modifications SEO dynamiques</p>
+                        </div>
+                        <button onclick="window.closeRuleModal()" 
+                                class="text-white hover:text-gray-200 text-4xl leading-none">
+                            ×
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Body -->
+                <div class="px-8 py-6 max-h-[70vh] overflow-y-auto">
+                    <!-- Basic Info Section -->
+                    <div class="mb-8">
+                        <h4 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                            <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">1</span>
+                            Informations de base
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Nom de la règle <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="ruleName" 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                       placeholder="Ex: Homepage - SEO Optimized">
+                            </div>
+                            
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Description (optionnelle)</label>
+                                <textarea id="ruleDescription" rows="2"
+                                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                          placeholder="Ex: Optimise le title et meta description de la homepage"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Site web <span class="text-red-500">*</span>
+                                </label>
+                                <select id="ruleWebsite" 
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Choisir un site...</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                                <select id="ruleStatus" 
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="draft">🟡 Brouillon</option>
+                                    <option value="active">🟢 Actif</option>
+                                    <option value="inactive">⚫ Inactif</option>
+                                    <option value="testing">🔵 Test</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Targeting Section -->
+                    <div class="mb-8 border-t pt-8">
+                        <h4 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                            <span class="bg-purple-100 text-purple-600 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">2</span>
+                            Ciblage des pages
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Type de correspondance</label>
+                                <select id="ruleMatchType" 
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="exact">Exacte</option>
+                                    <option value="starts_with">Commence par</option>
+                                    <option value="contains">Contient</option>
+                                    <option value="ends_with">Se termine par</option>
+                                    <option value="regex">Regex (avancé)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Pattern d'URL <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="ruleUrlPattern" 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                       placeholder="Ex: / ou /products/ ou /blog/*">
+                                <p class="text-xs text-gray-500 mt-1">
+                                    Exemples: <code>/</code> (homepage), <code>/products/</code> (toutes les pages produits)
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mt-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Priorité</label>
+                                <input type="number" id="rulePriority" value="100" min="0" max="1000"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <p class="text-xs text-gray-500 mt-1">Plus élevé = plus prioritaire (0-1000)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modifications Section -->
+                    <div class="mb-8 border-t pt-8">
+                        <h4 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                            <span class="bg-green-100 text-green-600 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">3</span>
+                            Modifications SEO
+                        </h4>
+                        
+                        <p class="text-sm text-gray-600 mb-4">Sélectionnez les éléments que vous souhaitez modifier</p>
+                        
+                        <!-- Title -->
+                        <div class="mb-4">
+                            <label class="flex items-center cursor-pointer mb-2">
+                                <input type="checkbox" id="modTitle" onchange="window.updateModificationSections()"
+                                       class="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 mr-3">
+                                <span class="font-semibold text-gray-900">📄 Title Tag</span>
+                            </label>
+                            <div id="titleSection" style="display:none;" class="ml-8 p-4 bg-gray-50 rounded-lg">
+                                <div class="grid grid-cols-3 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Action</label>
+                                        <select id="titleAction" class="w-full px-3 py-2 text-sm border rounded">
+                                            <option value="replace">Remplacer</option>
+                                            <option value="prepend">Ajouter avant</option>
+                                            <option value="append">Ajouter après</option>
+                                            <option value="template">Template</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-span-2">
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Valeur</label>
+                                        <input type="text" id="titleValue" 
+                                               class="w-full px-3 py-2 text-sm border rounded"
+                                               placeholder="Ex: {original} | Ma Marque - 2024">
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2">Variables: {original}, {brand}, {year}</p>
+                            </div>
+                        </div>
+
+                        <!-- Meta Description -->
+                        <div class="mb-4">
+                            <label class="flex items-center cursor-pointer mb-2">
+                                <input type="checkbox" id="modMeta" onchange="window.updateModificationSections()"
+                                       class="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 mr-3">
+                                <span class="font-semibold text-gray-900">📝 Meta Description</span>
+                            </label>
+                            <div id="metaSection" style="display:none;" class="ml-8 p-4 bg-gray-50 rounded-lg">
+                                <div class="grid grid-cols-3 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Action</label>
+                                        <select id="metaAction" class="w-full px-3 py-2 text-sm border rounded">
+                                            <option value="replace">Remplacer</option>
+                                            <option value="append">Ajouter après</option>
+                                            <option value="template">Template</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-span-2">
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Valeur</label>
+                                        <textarea id="metaValue" rows="2"
+                                                  class="w-full px-3 py-2 text-sm border rounded"
+                                                  placeholder="Description optimisée pour SEO (max 160 caractères)"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- H1 -->
+                        <div class="mb-4">
+                            <label class="flex items-center cursor-pointer mb-2">
+                                <input type="checkbox" id="modH1" onchange="window.updateModificationSections()"
+                                       class="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 mr-3">
+                                <span class="font-semibold text-gray-900">📌 H1 Tag</span>
+                            </label>
+                            <div id="h1Section" style="display:none;" class="ml-8 p-4 bg-gray-50 rounded-lg">
+                                <div class="grid grid-cols-3 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Action</label>
+                                        <select id="h1Action" class="w-full px-3 py-2 text-sm border rounded">
+                                            <option value="replace">Remplacer</option>
+                                            <option value="inject_if_missing">Ajouter si manquant</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-span-2">
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Valeur</label>
+                                        <input type="text" id="h1Value" 
+                                               class="w-full px-3 py-2 text-sm border rounded"
+                                               placeholder="Nouveau H1">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Other modifications (simplified) -->
+                        <div class="grid grid-cols-2 gap-3 ml-8 mt-4">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" id="modOG" class="w-4 h-4 text-blue-600 rounded mr-2">
+                                <span class="text-sm text-gray-700">🌐 Open Graph (Facebook)</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" id="modTwitter" class="w-4 h-4 text-blue-600 rounded mr-2">
+                                <span class="text-sm text-gray-700">🐦 Twitter Card</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" id="modCanonical" class="w-4 h-4 text-blue-600 rounded mr-2">
+                                <span class="text-sm text-gray-700">🔗 Canonical URL</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" id="modRobots" class="w-4 h-4 text-blue-600 rounded mr-2">
+                                <span class="text-sm text-gray-700">🤖 Robots Meta</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" id="modSchema" class="w-4 h-4 text-blue-600 rounded mr-2">
+                                <span class="text-sm text-gray-700">📊 Schema.org JSON-LD</span>
+                            </label>
+                        </div>
+
+                        <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <p class="text-sm text-blue-800">
+                                💡 <strong>Astuce:</strong> Cochez au moins une modification pour créer une règle fonctionnelle.
+                                Les modifications avancées peuvent être configurées après création.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="px-8 py-6 bg-gray-50 border-t rounded-b-xl">
+                    <div class="flex justify-between items-center">
+                        <p class="text-sm text-gray-600">
+                            <span class="text-red-500">*</span> Champs obligatoires
+                        </p>
+                        <div class="flex space-x-3">
+                            <button onclick="window.closeRuleModal()" 
+                                    class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-100 font-medium">
+                                Annuler
+                            </button>
+                            <button onclick="window.saveRule()" 
+                                    class="px-8 py-3 btn-primary text-white rounded-lg font-semibold">
+                                💾 Enregistrer la Règle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Pixel Code Modal -->
     <div id="pixelCodeModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4">
@@ -2277,7 +2533,7 @@
                     // Populate website selects
                     setTimeout(() => {
                         if (window.currentWebsites) {
-                            const selects = ['pixelWebsiteSelect', 'ruleWebsiteFilter'];
+                            const selects = ['pixelWebsiteSelect', 'ruleWebsiteFilter', 'ruleWebsite'];
                             selects.forEach(selectId => {
                                 const select = document.getElementById(selectId);
                                 if (select) {
@@ -2607,14 +2863,244 @@ ${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js" async${scriptClo
             }
         }
 
-        window.showCreateRuleModal = function() {
-            // TODO: Modal pour créer des règles complètes
-            window.showNotification('Utilisez les exemples ci-dessous pour créer vos premières règles !', 'info');
+        window.showCreateRuleModal = function(ruleId = null) {
+            // Show the rule editor modal
+            window.currentEditingRuleId = ruleId;
+            
+            if (ruleId) {
+                // Load existing rule data
+                loadRuleDataForEdit(ruleId);
+            } else {
+                // Reset form for new rule
+                resetRuleEditorForm();
+            }
+            
+            document.getElementById('ruleEditorModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
         }
 
         window.editSEORule = function(ruleId) {
-            // TODO: Modal d'édition de règle
-            window.showNotification('Fonctionnalité en cours de développement', 'info');
+            window.showCreateRuleModal(ruleId);
+        }
+
+        window.closeRuleModal = function() {
+            document.getElementById('ruleEditorModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            window.currentEditingRuleId = null;
+        }
+
+        async function loadRuleDataForEdit(ruleId) {
+            try {
+                const response = await fetch(`${API_URL}/api/seo-rules/${ruleId}`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                const data = await response.json();
+                
+                if (data.success && data.rule) {
+                    populateRuleEditor(data.rule);
+                }
+            } catch (error) {
+                console.error('Load rule error:', error);
+                window.showNotification('Erreur lors du chargement de la règle', 'error');
+            }
+        }
+
+        function resetRuleEditorForm() {
+            document.getElementById('modalTitle').textContent = 'Créer une Règle SEO';
+            document.getElementById('ruleName').value = '';
+            document.getElementById('ruleDescription').value = '';
+            document.getElementById('ruleWebsite').value = '';
+            document.getElementById('ruleMatchType').value = 'exact';
+            document.getElementById('ruleUrlPattern').value = '';
+            document.getElementById('rulePriority').value = '100';
+            document.getElementById('ruleStatus').value = 'draft';
+            
+            // Reset all modification checkboxes and fields
+            document.getElementById('modTitle').checked = false;
+            document.getElementById('modMeta').checked = false;
+            document.getElementById('modH1').checked = false;
+            document.getElementById('modOG').checked = false;
+            document.getElementById('modTwitter').checked = false;
+            document.getElementById('modCanonical').checked = false;
+            document.getElementById('modRobots').checked = false;
+            document.getElementById('modSchema').checked = false;
+            
+            // Clear all text fields
+            document.getElementById('titleAction').value = 'replace';
+            document.getElementById('titleValue').value = '';
+            document.getElementById('metaAction').value = 'replace';
+            document.getElementById('metaValue').value = '';
+            document.getElementById('h1Action').value = 'replace';
+            document.getElementById('h1Value').value = '';
+            
+            updateModificationSections();
+        }
+
+        function populateRuleEditor(rule) {
+            document.getElementById('modalTitle').textContent = 'Modifier la Règle SEO';
+            document.getElementById('ruleName').value = rule.name || '';
+            document.getElementById('ruleDescription').value = rule.description || '';
+            document.getElementById('ruleWebsite').value = rule.websiteId || '';
+            document.getElementById('ruleMatchType').value = rule.targeting?.matchType || 'exact';
+            document.getElementById('ruleUrlPattern').value = rule.targeting?.urlPattern || '';
+            document.getElementById('rulePriority').value = rule.priority || 100;
+            document.getElementById('ruleStatus').value = rule.status || 'draft';
+            
+            // Populate modifications
+            const mods = rule.modifications || {};
+            
+            if (mods.title?.enabled) {
+                document.getElementById('modTitle').checked = true;
+                document.getElementById('titleAction').value = mods.title.action || 'replace';
+                document.getElementById('titleValue').value = mods.title.value || mods.title.template || '';
+            }
+            
+            if (mods.metaDescription?.enabled) {
+                document.getElementById('modMeta').checked = true;
+                document.getElementById('metaAction').value = mods.metaDescription.action || 'replace';
+                document.getElementById('metaValue').value = mods.metaDescription.value || '';
+            }
+            
+            if (mods.h1?.enabled) {
+                document.getElementById('modH1').checked = true;
+                document.getElementById('h1Action').value = mods.h1.action || 'replace';
+                document.getElementById('h1Value').value = mods.h1.value || '';
+            }
+            
+            document.getElementById('modOG').checked = mods.openGraph?.enabled || false;
+            document.getElementById('modTwitter').checked = mods.twitterCard?.enabled || false;
+            document.getElementById('modCanonical').checked = mods.canonical?.enabled || false;
+            document.getElementById('modRobots').checked = mods.robots?.enabled || false;
+            document.getElementById('modSchema').checked = mods.structuredData?.enabled || false;
+            
+            updateModificationSections();
+        }
+
+        window.updateModificationSections = function() {
+            // Show/hide modification sections based on checkboxes
+            document.getElementById('titleSection').style.display = 
+                document.getElementById('modTitle').checked ? 'block' : 'none';
+            document.getElementById('metaSection').style.display = 
+                document.getElementById('modMeta').checked ? 'block' : 'none';
+            document.getElementById('h1Section').style.display = 
+                document.getElementById('modH1').checked ? 'block' : 'none';
+        }
+
+        window.saveRule = async function() {
+            const websiteId = document.getElementById('ruleWebsite').value;
+            const name = document.getElementById('ruleName').value;
+            const urlPattern = document.getElementById('ruleUrlPattern').value;
+            
+            if (!websiteId || !name || !urlPattern) {
+                window.showNotification('Veuillez remplir tous les champs obligatoires', 'error');
+                return;
+            }
+            
+            const ruleData = {
+                websiteId,
+                name,
+                description: document.getElementById('ruleDescription').value,
+                targeting: {
+                    matchType: document.getElementById('ruleMatchType').value,
+                    urlPattern
+                },
+                modifications: {},
+                priority: parseInt(document.getElementById('rulePriority').value),
+                status: document.getElementById('ruleStatus').value
+            };
+            
+            // Build modifications object
+            if (document.getElementById('modTitle').checked) {
+                const action = document.getElementById('titleAction').value;
+                const value = document.getElementById('titleValue').value;
+                ruleData.modifications.title = {
+                    enabled: true,
+                    action,
+                    [action === 'template' ? 'template' : 'value']: value
+                };
+            }
+            
+            if (document.getElementById('modMeta').checked) {
+                const action = document.getElementById('metaAction').value;
+                ruleData.modifications.metaDescription = {
+                    enabled: true,
+                    action,
+                    value: document.getElementById('metaValue').value
+                };
+            }
+            
+            if (document.getElementById('modH1').checked) {
+                ruleData.modifications.h1 = {
+                    enabled: true,
+                    action: document.getElementById('h1Action').value,
+                    value: document.getElementById('h1Value').value
+                };
+            }
+            
+            if (document.getElementById('modOG').checked) {
+                ruleData.modifications.openGraph = {
+                    enabled: true,
+                    tags: [{ property: 'og:type', content: 'website' }]
+                };
+            }
+            
+            if (document.getElementById('modTwitter').checked) {
+                ruleData.modifications.twitterCard = {
+                    enabled: true,
+                    tags: [{ name: 'twitter:card', content: 'summary_large_image' }]
+                };
+            }
+            
+            if (document.getElementById('modCanonical').checked) {
+                ruleData.modifications.canonical = { enabled: true, action: 'set', useCurrentUrl: true };
+            }
+            
+            if (document.getElementById('modRobots').checked) {
+                ruleData.modifications.robots = { enabled: true, directives: ['index', 'follow'] };
+            }
+            
+            if (document.getElementById('modSchema').checked) {
+                ruleData.modifications.structuredData = {
+                    enabled: true,
+                    schemas: [{
+                        type: 'WebPage',
+                        data: { "@context": "https://schema.org", "@type": "WebPage" }
+                    }]
+                };
+            }
+            
+            try {
+                const url = window.currentEditingRuleId 
+                    ? `${API_URL}/api/seo-rules/${window.currentEditingRuleId}`
+                    : `${API_URL}/api/seo-rules`;
+                
+                const method = window.currentEditingRuleId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(ruleData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    window.showNotification(
+                        window.currentEditingRuleId ? 'Règle mise à jour !' : 'Règle créée !', 
+                        'success'
+                    );
+                    closeRuleModal();
+                    loadSEORules();
+                } else {
+                    window.showNotification(data.error || 'Erreur lors de la sauvegarde', 'error');
+                }
+            } catch (error) {
+                console.error('Save rule error:', error);
+                window.showNotification('Erreur lors de la sauvegarde', 'error');
+            }
         }
 
         window.createExampleRule = async function(type) {
