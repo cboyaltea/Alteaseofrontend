@@ -2207,44 +2207,24 @@
                 return;
             }
 
-            const pixelCode = `<script>
-(function() {
-    var config = {
-        siteId: '${websiteId}',
-        apiEndpoint: '${API_URL}',
-        autoOptimize: true
-    };
-    
-    // Tracking function
-    function trackPage() {
-        var data = {
-            url: window.location.href,
-            title: document.title,
-            referrer: document.referrer,
-            timestamp: new Date().toISOString()
-        };
-        
-        var img = new Image();
-        img.src = config.apiEndpoint + '/pixel.gif?site=' + config.siteId + 
-                  '&url=' + encodeURIComponent(data.url) +
-                  '&title=' + encodeURIComponent(data.title);
-    }
-    
-    // Track on load
-    if (document.readyState === 'complete') {
-        trackPage();
-    } else {
-        window.addEventListener('load', trackPage);
-    }
-    
-    // Track on navigation (SPA support)
-    var originalPushState = history.pushState;
-    history.pushState = function() {
-        originalPushState.apply(this, arguments);
-        trackPage();
-    };
-})();
-<\/script>`;
+            const website = window.currentWebsites?.find(w => w._id === websiteId);
+            const siteId = website?.siteId || websiteId;
+
+            const scriptOpen = '<' + 'script>';
+            const scriptClose = '<' + '/script>';
+
+            const pixelCode = `<!-- SEO Pixel Configuration -->
+${scriptOpen}
+window.seoPixelConfig = {
+    siteId: '${siteId}',
+    apiEndpoint: '${API_URL}',
+    brand: '${website?.name || 'Votre Marque'}',
+    debug: false  // true pour dev, false pour production
+};
+${scriptClose}
+
+<!-- SEO Pixel Script -->
+${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js"${scriptClose}`;
 
             document.getElementById('pixelCode').innerHTML = `<code>${escapeHtml(pixelCode)}</code>`;
         }
@@ -2550,6 +2530,20 @@
                     break;
                 case 'installation':
                     loadWebsites();
+                    // Populate website select
+                    setTimeout(() => {
+                        if (window.currentWebsites) {
+                            const select = document.getElementById('installationWebsite');
+                            if (select) {
+                                const currentValue = select.value;
+                                select.innerHTML = '<option value="">Choisir un site...</option>' +
+                                    window.currentWebsites.map(w => 
+                                        `<option value="${w._id}">${escapeHtml(w.name)}</option>`
+                                    ).join('');
+                                if (currentValue) select.value = currentValue;
+                            }
+                        }
+                    }, 100);
                     break;
             }
         }
