@@ -1257,7 +1257,35 @@
         // 🔧 CONFIGURATION
         // ═══════════════════════════════════════════════════════════════════
         
-        const API_URL = 'https://alteaseo-production.up.railway.app';
+        // ╔════════════════════════════════════════════════════════════════╗
+        // ║                                                                ║
+        // ║     🔧 CONFIGURATION DE L'API - MODIFIER ICI                  ║
+        // ║                                                                ║
+        // ║  Pour Production (Railway + Vercel):                          ║
+        // ║  const API_URL = 'https://votre-app.up.railway.app';         ║
+        // ║                                                                ║
+        // ║  Pour Tests Locaux:                                           ║
+        // ║  const API_URL = 'http://localhost:3000';                     ║
+        // ║                                                                ║
+        // ║  Comment trouver votre URL Railway:                           ║
+        // ║  1. Aller sur railway.app/dashboard                           ║
+        // ║  2. Cliquer sur votre projet backend                          ║
+        // ║  3. Settings → Domains                                        ║
+        // ║  4. Copier l'URL (https://...)                                ║
+        // ║                                                                ║
+        // ║  IMPORTANT:                                                    ║
+        // ║  - PAS de slash (/) à la fin de l'URL                         ║
+        // ║  - Utiliser https:// pour production                          ║
+        // ║  - Vérifier CORS dans server-multiuser.js                     ║
+        // ║                                                                ║
+        // ╚════════════════════════════════════════════════════════════════╝
+
+        // ⚠️ MODIFIEZ CETTE LIGNE AVANT DE DÉPLOYER SUR VERCEL:
+        const API_URL = 'http://localhost:3000';  // ← Remplacer par votre URL Railway
+        
+        // Exemples d'URLs valides:
+        // const API_URL = 'https://mon-projet.up.railway.app';
+        // const API_URL = 'https://backend-seo.up.railway.app';
         
         let currentUser = null;
         let currentToken = null;
@@ -2334,135 +2362,25 @@ ${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js"${scriptClose}`;
         /**
          * Générer le code pixel pour un site spécifique
          */
-        function generatePixelCodeForSite(siteId) {
+        function generatePixelCodeForSite(websiteId) {
+            const website = window.currentWebsites?.find(w => w._id === websiteId);
+            const siteId = website?.siteId || websiteId;
+            
             const scriptOpen = '<' + 'script>';
             const scriptClose = '<' + '/script>';
             
-            return scriptOpen + `
-(function() {
-    var config = {
-        siteId: '${siteId}',
-        apiEndpoint: '${API_URL}',
-        autoOptimize: true,
-        trackClicks: true,
-        trackScrollDepth: true,
-        debug: false
-    };
+            return `<!-- SEO Pixel Configuration -->
+${scriptOpen}
+window.seoPixelConfig = {
+    siteId: '${siteId}',
+    apiEndpoint: '${API_URL}',
+    brand: '${website?.name || 'Votre Marque'}',
+    debug: false  // true pour dev, false pour production
+};
+${scriptClose}
 
-    function collectPageData() {
-        return {
-            url: window.location.href,
-            path: window.location.pathname,
-            title: document.title,
-            referrer: document.referrer || 'direct',
-            userAgent: navigator.userAgent,
-            language: navigator.language,
-            timestamp: new Date().toISOString(),
-            meta: {
-                description: getMetaContent('description'),
-                keywords: getMetaContent('keywords'),
-                ogTitle: getMetaContent('og:title'),
-                ogDescription: getMetaContent('og:description')
-            }
-        };
-    }
-
-    function getMetaContent(name) {
-        var meta = document.querySelector('meta[name="' + name + '"]') || 
-                   document.querySelector('meta[property="' + name + '"]');
-        return meta ? meta.getAttribute('content') : '';
-    }
-
-    function sendPixelData() {
-        var data = collectPageData();
-        var pixelUrl = config.apiEndpoint + '/pixel.gif?' + 
-            'siteId=' + encodeURIComponent(config.siteId) + 
-            '&data=' + encodeURIComponent(JSON.stringify(data)) +
-            '&t=' + new Date().getTime();
-        
-        var img = new Image(1, 1);
-        img.src = pixelUrl;
-
-        if (navigator.sendBeacon) {
-            navigator.sendBeacon(
-                config.apiEndpoint + '/api/tracking/beacon',
-                JSON.stringify({ siteId: config.siteId, data: data })
-            );
-        }
-    }
-
-    if (document.readyState === 'complete') {
-        sendPixelData();
-    } else {
-        window.addEventListener('load', sendPixelData);
-    }
-
-    if (config.trackClicks) {
-        document.addEventListener('click', function(e) {
-            if (e.target.tagName === 'A') {
-                var clickData = { 
-                    href: e.target.href, 
-                    text: e.target.innerText.substring(0, 50) 
-                };
-                if (navigator.sendBeacon) {
-                    navigator.sendBeacon(
-                        config.apiEndpoint + '/api/tracking/event',
-                        JSON.stringify({ 
-                            siteId: config.siteId, 
-                            event: 'click', 
-                            data: clickData 
-                        })
-                    );
-                }
-            }
-        });
-    }
-
-    if (config.trackScrollDepth) {
-        var scrollDepths = [25, 50, 75, 100];
-        var tracked = {};
-        
-        window.addEventListener('scroll', function() {
-            var scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-            
-            scrollDepths.forEach(function(depth) {
-                if (scrollPercent >= depth && !tracked[depth]) {
-                    tracked[depth] = true;
-                    if (navigator.sendBeacon) {
-                        navigator.sendBeacon(
-                            config.apiEndpoint + '/api/tracking/event',
-                            JSON.stringify({ 
-                                siteId: config.siteId, 
-                                event: 'scroll_depth', 
-                                data: { depth: depth + '%' } 
-                            })
-                        );
-                    }
-                }
-            });
-        });
-    }
-
-    var pageLoadTime = Date.now();
-    
-    window.addEventListener('beforeunload', function() {
-        if (navigator.sendBeacon) {
-            navigator.sendBeacon(
-                config.apiEndpoint + '/api/tracking/beacon',
-                JSON.stringify({ 
-                    siteId: config.siteId, 
-                    event: 'page_leave',
-                    data: { duration: Date.now() - pageLoadTime }
-                })
-            );
-        }
-    });
-    
-    if (config.debug) {
-        console.log('[SEO Platform] Pixel chargé avec succès!', config);
-    }
-})();
-` + scriptClose;
+<!-- SEO Pixel Script -->
+${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js"${scriptClose}`;
         }
 
         // ═══════════════════════════════════════════════════════════════════
