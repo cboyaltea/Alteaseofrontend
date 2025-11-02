@@ -1259,7 +1259,7 @@
         
         // ╔════════════════════════════════════════════════════════════════╗
         // ║                                                                ║
-        // ║     🔧 CONFIGURATION DE L'API - MODIFIER ICI                  ║
+        // ║     🔧 CONFIGURATION DE L'API - MODIFIER ICI AVANT DÉPLOIEMENT║
         // ║                                                                ║
         // ║  Pour Production (Railway + Vercel):                          ║
         // ║  const API_URL = 'https://votre-app.up.railway.app';         ║
@@ -1268,24 +1268,24 @@
         // ║  const API_URL = 'http://localhost:3000';                     ║
         // ║                                                                ║
         // ║  Comment trouver votre URL Railway:                           ║
-        // ║  1. Aller sur railway.app/dashboard                           ║
+        // ║  1. Aller sur railway.app → Dashboard                         ║
         // ║  2. Cliquer sur votre projet backend                          ║
-        // ║  3. Settings → Domains                                        ║
-        // ║  4. Copier l'URL (https://...)                                ║
+        // ║  3. Settings → Domains → Copier l'URL                         ║
         // ║                                                                ║
         // ║  IMPORTANT:                                                    ║
-        // ║  - PAS de slash (/) à la fin de l'URL                         ║
-        // ║  - Utiliser https:// pour production                          ║
-        // ║  - Vérifier CORS dans server-multiuser.js                     ║
+        // ║  - PAS de slash (/) à la fin                                  ║
+        // ║  - Utiliser https:// (pas http://)                            ║
+        // ║  - Vérifier que CORS est activé dans le backend               ║
         // ║                                                                ║
         // ╚════════════════════════════════════════════════════════════════╝
 
-        // ⚠️ MODIFIEZ CETTE LIGNE AVANT DE DÉPLOYER SUR VERCEL:
-        const API_URL = 'https://alteaseo-production.up.railway.app';  // ← Remplacer par votre URL Railway
+        // ⚠️ MODIFIEZ CETTE LIGNE AVEC VOTRE URL RAILWAY:
+        const API_URL = 'http://localhost:3000';  // ← Remplacer avant déploiement
         
         // Exemples d'URLs valides:
-        // const API_URL = 'https://mon-projet.up.railway.app';
-        // const API_URL = 'https://backend-seo.up.railway.app';
+        // const API_URL = 'https://mon-backend.up.railway.app';
+        // const API_URL = 'https://alteaseo-production.up.railway.app';
+        // const API_URL = 'https://seo-backend-xyz.railway.app';
         
         let currentUser = null;
         let currentToken = null;
