@@ -1,13 +1,2769 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEO Automation Platform - Multi-User Enterprise</title>
+    <title>SEO Platform - Multi-User, Multi-Site, Multi-Language</title>
     <script src="https://cdn.tailwindcss.com"></script>
-  <script type="module" crossorigin src="/assets/index-DsjGSvZP.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tab-active {
+            border-bottom: 3px solid #3b82f6;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .stats-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-preview {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        /* PDF Export Styles */
+        .pdf-content {
+            background: white;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .pdf-header {
+            border-bottom: 3px solid #3b82f6;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .pdf-section {
+            margin-bottom: 30px;
+        }
+
+        .pdf-title {
+            color: #1e40af;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .pdf-subtitle {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
-    <div id="root"></div>
+    
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- 🔐 LOGIN/REGISTER PAGE -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div id="authPage" class="min-h-screen gradient-bg flex items-center justify-center p-4">
+        <div class="max-w-md w-full">
+            <!-- Login Form -->
+            <div id="loginForm" class="bg-white rounded-2xl shadow-2xl p-8 animate-fade-in">
+                <div class="text-center mb-8">
+                    <h1 class="text-4xl font-bold text-gray-800 mb-2">🚀 SEO Platform</h1>
+                    <p class="text-gray-600">Multi-User • Multi-Site • Multi-Language</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="loginEmail" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="votre@email.com">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
+                        <input type="password" id="loginPassword" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="••••••••">
+                    </div>
+                    
+                    <button onclick="window.login()" 
+                            class="w-full btn-primary text-white py-3 rounded-lg font-semibold">
+                        Se connecter
+                    </button>
+                    
+                    <div class="text-center">
+                        <button onclick="window.showRegisterForm()" 
+                                class="text-blue-600 hover:text-blue-800 font-medium">
+                            Créer un compte
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="registerForm" class="bg-white rounded-2xl shadow-2xl p-8 animate-fade-in hidden">
+                <div class="text-center mb-8">
+                    <h1 class="text-4xl font-bold text-gray-800 mb-2">📝 Inscription</h1>
+                    <p class="text-gray-600">Créez votre compte gratuitement</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                            <input type="text" id="registerFirstName" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   placeholder="Jean">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                            <input type="text" id="registerLastName" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   placeholder="Dupont">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="registerEmail" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="votre@email.com">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
+                        <input type="password" id="registerPassword" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="••••••••">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nom de l'organisation</label>
+                        <input type="text" id="registerOrganization" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Ma Super Entreprise">
+                    </div>
+                    
+                    <button onclick="window.register()" 
+                            class="w-full btn-primary text-white py-3 rounded-lg font-semibold">
+                        Créer mon compte
+                    </button>
+                    
+                    <div class="text-center">
+                        <button onclick="window.showLoginForm()" 
+                                class="text-blue-600 hover:text-blue-800 font-medium">
+                            Déjà un compte ? Se connecter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- 📊 MAIN DASHBOARD -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div id="dashboardPage" class="hidden min-h-screen bg-gray-50">
+        <!-- Top Navigation Bar -->
+        <nav class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <h1 class="text-2xl font-bold gradient-bg bg-clip-text text-transparent">🚀 SEO Platform</h1>
+                        <span id="userInfo" class="ml-6 text-sm text-gray-600"></span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="window.refreshDashboard()" 
+                                class="px-4 py-2 text-sm text-gray-700 hover:text-gray-900">
+                            🔄 Actualiser
+                        </button>
+                        <button onclick="window.logout()" 
+                                class="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 text-sm font-medium">
+                            🚪 Déconnexion
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Tabs Navigation -->
+        <div class="bg-white border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <nav class="flex space-x-8" id="tabsNav">
+                    <button onclick="window.switchTab('dashboard')" 
+                            class="py-4 px-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium text-gray-500 hover:text-gray-700 tab-button"
+                            data-tab="dashboard">
+                        📊 Dashboard
+                    </button>
+                    <button onclick="window.switchTab('websites')" 
+                            class="py-4 px-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium text-gray-500 hover:text-gray-700 tab-button"
+                            data-tab="websites">
+                        🌐 Sites Web
+                    </button>
+                    <button onclick="window.switchTab('content')" 
+                            class="py-4 px-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium text-gray-500 hover:text-gray-700 tab-button"
+                            data-tab="content">
+                        ✍️ Génération de Contenu
+                    </button>
+                    <button onclick="window.switchTab('analytics')" 
+                            class="py-4 px-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium text-gray-500 hover:text-gray-700 tab-button"
+                            data-tab="analytics">
+                        📈 Analyses
+                    </button>
+                    <button onclick="window.switchTab('users')" 
+                            class="py-4 px-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium text-gray-500 hover:text-gray-700 tab-button"
+                            data-tab="users">
+                        👥 Utilisateurs
+                    </button>
+                    <button onclick="window.switchTab('seopixel')" 
+                            class="py-4 px-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium text-gray-500 hover:text-gray-700 tab-button"
+                            data-tab="seopixel">
+                        🎯 SEO Pixel
+                    </button>
+                    <button onclick="window.switchTab('installation')" 
+                            class="py-4 px-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium text-gray-500 hover:text-gray-700 tab-button"
+                            data-tab="installation">
+                        ⚙️ Installation
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            <!-- ═══════════════════════════════════════════════════════════════════ -->
+            <!-- TAB 1: DASHBOARD -->
+            <!-- ═══════════════════════════════════════════════════════════════════ -->
+            <div id="tab-dashboard" class="tab-content">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900">Tableau de Bord</h2>
+                    <p class="text-gray-600 mt-2">Vue d'ensemble de votre activité SEO</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="stats-card bg-white p-6 rounded-xl shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Sites Web</p>
+                                <p class="text-3xl font-bold text-gray-900" id="statsWebsites">0</p>
+                            </div>
+                            <div class="bg-blue-100 p-3 rounded-lg">
+                                <span class="text-3xl">🌐</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-card bg-white p-6 rounded-xl shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Contenus Générés</p>
+                                <p class="text-3xl font-bold text-gray-900" id="statsContents">0</p>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-lg">
+                                <span class="text-3xl">✍️</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-card bg-white p-6 rounded-xl shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Pages Analysées</p>
+                                <p class="text-3xl font-bold text-gray-900" id="statsAnalytics">0</p>
+                            </div>
+                            <div class="bg-purple-100 p-3 rounded-lg">
+                                <span class="text-3xl">📊</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-card bg-white p-6 rounded-xl shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Utilisateurs</p>
+                                <p class="text-3xl font-bold text-gray-900" id="statsUsers">0</p>
+                            </div>
+                            <div class="bg-yellow-100 p-3 rounded-lg">
+                                <span class="text-3xl">👥</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Activité Récente</h3>
+                    <div id="recentActivity" class="space-y-4">
+                        <p class="text-gray-500 text-center py-8">Chargement...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════════════ -->
+            <!-- TAB 2: WEBSITES -->
+            <!-- ═══════════════════════════════════════════════════════════════════ -->
+            <div id="tab-websites" class="tab-content hidden">
+                <div class="mb-8 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900">Sites Web</h2>
+                        <p class="text-gray-600 mt-2">Gérez tous vos sites en un seul endroit</p>
+                    </div>
+                    <button onclick="window.showAddWebsiteModal()" 
+                            class="btn-primary text-white px-6 py-3 rounded-lg font-semibold">
+                        ➕ Ajouter un Site
+                    </button>
+                </div>
+
+                <!-- Filter -->
+                <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+                    <div class="flex items-center space-x-4">
+                        <label class="text-sm font-medium text-gray-700">Filtrer par langue:</label>
+                        <select id="filterLanguage" onchange="loadWebsites()" 
+                                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Toutes les langues</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="en">🇬🇧 English</option>
+                            <option value="es">🇪🇸 Español</option>
+                            <option value="de">🇩🇪 Deutsch</option>
+                            <option value="it">🇮🇹 Italiano</option>
+                            <option value="pt">🇵🇹 Português</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Websites Grid -->
+                <div id="websitesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <p class="text-gray-500 text-center py-8 col-span-full">Chargement...</p>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════════════ -->
+            <!-- TAB 3: CONTENT GENERATION -->
+            <!-- ═══════════════════════════════════════════════════════════════════ -->
+            <div id="tab-content" class="tab-content hidden">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900">Génération de Contenu IA</h2>
+                    <p class="text-gray-600 mt-2">Créez du contenu SEO optimisé avec Claude AI</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Generation Form -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <h3 class="text-xl font-bold text-gray-900 mb-6">Nouveau Contenu</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Site Web</label>
+                                    <select id="contentWebsite" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                        <option value="">Sélectionner un site...</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Type de Contenu</label>
+                                    <select id="contentType" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                        <option value="blog">📝 Article de Blog</option>
+                                        <option value="product">🛍️ Description Produit</option>
+                                        <option value="meta">🏷️ Meta Description</option>
+                                        <option value="landing">🎯 Page d'Atterrissage</option>
+                                        <option value="social">📱 Post Réseaux Sociaux</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Sujet / Thème</label>
+                                    <input type="text" id="contentTopic" 
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                           placeholder="Ex: Les meilleures pratiques SEO en 2025">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Mots-clés (séparés par des virgules)</label>
+                                    <input type="text" id="contentKeywords" 
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                           placeholder="SEO, référencement, optimisation">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Langue</label>
+                                    <select id="contentLanguage" 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                        <option value="fr">🇫🇷 Français</option>
+                                        <option value="en">🇬🇧 English</option>
+                                        <option value="es">🇪🇸 Español</option>
+                                        <option value="de">🇩🇪 Deutsch</option>
+                                        <option value="it">🇮🇹 Italiano</option>
+                                        <option value="pt">🇵🇹 Português</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Instructions supplémentaires (optionnel)</label>
+                                    <textarea id="contentInstructions" rows="3"
+                                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                              placeholder="Ajoutez des instructions spécifiques pour personnaliser le contenu..."></textarea>
+                                </div>
+
+                                <button onclick="window.generateContent()" 
+                                        class="w-full btn-primary text-white py-4 rounded-lg font-semibold text-lg">
+                                    🤖 Générer le Contenu avec Claude AI
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Generated Content Preview -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-white rounded-xl shadow-sm p-6 sticky top-6">
+                            <h3 class="text-xl font-bold text-gray-900 mb-4">Aperçu</h3>
+                            <div id="contentPreview" class="content-preview">
+                                <p class="text-gray-500 text-center py-8">Le contenu généré apparaîtra ici</p>
+                            </div>
+                            
+                            <div id="contentActions" class="hidden mt-6 space-y-3">
+                                <button onclick="window.exportContentAsPDF()" 
+                                        class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold">
+                                    📄 Exporter en PDF
+                                </button>
+                                <button onclick="window.copyContent()" 
+                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold">
+                                    📋 Copier le Contenu
+                                </button>
+                                <button onclick="window.saveContent()" 
+                                        class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold">
+                                    💾 Sauvegarder
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Contents -->
+                <div class="mt-8 bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-gray-900">Contenus Récents</h3>
+                        <button onclick="window.loadContents()" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            🔄 Actualiser
+                        </button>
+                    </div>
+                    <div id="contentsList" class="space-y-4">
+                        <p class="text-gray-500 text-center py-8">Chargement...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════════════ -->
+            <!-- TAB 4: ANALYTICS -->
+            <!-- ═══════════════════════════════════════════════════════════════════ -->
+            <div id="tab-analytics" class="tab-content hidden">
+                <div class="mb-8 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900">Analyses SEO</h2>
+                        <p class="text-gray-600 mt-2">Suivez les performances de vos sites</p>
+                    </div>
+                    <button onclick="window.exportAnalyticsReport()" 
+                            class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold">
+                        📄 Exporter Rapport PDF
+                    </button>
+                </div>
+
+                <!-- Analytics by Website -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Sélectionner un site:</label>
+                    <select id="analyticsWebsite" onchange="window.loadAnalytics()" 
+                            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Tous les sites</option>
+                    </select>
+                </div>
+
+                <div id="analyticsData" class="grid grid-cols-1 gap-6">
+                    <p class="text-gray-500 text-center py-8">Chargement des analyses...</p>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════════════ -->
+            <!-- TAB 5: USERS -->
+            <!-- ═══════════════════════════════════════════════════════════════════ -->
+            <div id="tab-users" class="tab-content hidden">
+                <div class="mb-8 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900">Utilisateurs</h2>
+                        <p class="text-gray-600 mt-2">Gérez votre équipe</p>
+                    </div>
+                    <button onclick="window.showInviteUserModal()" 
+                            class="btn-primary text-white px-6 py-3 rounded-lg font-semibold">
+                        ➕ Inviter un Utilisateur
+                    </button>
+                </div>
+
+                <div id="usersList" class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <p class="text-gray-500 text-center py-8">Chargement...</p>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════════════ -->
+            <!-- TAB 6: SEO PIXEL -->
+            <!-- ═══════════════════════════════════════════════════════════════════ -->
+            <div id="tab-seopixel" class="tab-content hidden">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900">🎯 SEO Pixel - Modifications Dynamiques</h2>
+                    <p class="text-gray-600 mt-2">Gérez vos règles SEO et installez le pixel sur vos sites</p>
+                </div>
+
+                <!-- Installation Card -->
+                <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg p-8 mb-8 text-white">
+                    <h3 class="text-2xl font-bold mb-4">📦 Installation du Pixel SEO</h3>
+                    <p class="text-blue-100 mb-6">
+                        Le pixel SEO modifie dynamiquement les balises de vos pages (title, meta, H1, Open Graph, etc.) 
+                        basé sur les règles que vous configurez. Simple et puissant !
+                    </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <h4 class="font-bold mb-2">1. Sélectionnez votre site</h4>
+                            <select id="pixelWebsiteSelect" onchange="window.generateSEOPixelCode()" 
+                                    class="w-full px-4 py-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-white">
+                                <option value="">Choisir un site...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <h4 class="font-bold mb-2">2. Copiez et installez</h4>
+                            <button onclick="window.copySEOPixelCode()" 
+                                    class="w-full bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-opacity-90">
+                                📋 Copier le Code d'Installation
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pixel Code Display -->
+                <div class="bg-white rounded-xl shadow-sm p-6 mb-8" id="pixelCodeSection" style="display:none;">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Code d'Installation</h3>
+                    <p class="text-gray-600 mb-4">
+                        Copiez ce code et collez-le dans le <code class="bg-gray-100 px-2 py-1 rounded">&lt;head&gt;</code> 
+                        de toutes vos pages :
+                    </p>
+                    <div class="bg-gray-900 text-green-400 p-6 rounded-lg overflow-x-auto">
+                        <pre id="seoPixelCodeDisplay" class="text-sm"></pre>
+                    </div>
+                    
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="border-l-4 border-blue-500 pl-4">
+                            <h4 class="font-bold text-gray-900">Taille</h4>
+                            <p class="text-sm text-gray-600">30 KB (8 KB gzippé)</p>
+                        </div>
+                        <div class="border-l-4 border-green-500 pl-4">
+                            <h4 class="font-bold text-gray-900">Performance</h4>
+                            <p class="text-sm text-gray-600">Impact &lt; 0.3s</p>
+                        </div>
+                        <div class="border-l-4 border-purple-500 pl-4">
+                            <h4 class="font-bold text-gray-900">Compatibilité</h4>
+                            <p class="text-sm text-gray-600">Tous navigateurs modernes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEO Rules Management -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900">Règles SEO Actives</h3>
+                            <p class="text-gray-600 text-sm mt-1">Gérez les modifications dynamiques de vos pages</p>
+                        </div>
+                        <button onclick="window.showCreateRuleModal()" 
+                                class="btn-primary text-white px-6 py-3 rounded-lg font-semibold">
+                            ➕ Créer une Règle
+                        </button>
+                    </div>
+
+                    <!-- Filter -->
+                    <div class="mb-6">
+                        <select id="ruleWebsiteFilter" onchange="window.loadSEORules()" 
+                                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Tous les sites</option>
+                        </select>
+                    </div>
+
+                    <!-- Rules List -->
+                    <div id="seoRulesList">
+                        <p class="text-gray-500 text-center py-8">Aucune règle SEO pour le moment</p>
+                    </div>
+                </div>
+
+                <!-- Quick Examples -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                    <div class="bg-blue-50 rounded-lg p-6 border border-blue-200">
+                        <div class="text-3xl mb-3">🏠</div>
+                        <h4 class="font-bold text-gray-900 mb-2">Homepage</h4>
+                        <p class="text-sm text-gray-600 mb-4">
+                            Modifier le title et meta description de votre page d'accueil
+                        </p>
+                        <button onclick="window.createExampleRule('homepage')" 
+                                class="text-blue-600 font-semibold text-sm hover:text-blue-800">
+                            Créer cette règle →
+                        </button>
+                    </div>
+
+                    <div class="bg-green-50 rounded-lg p-6 border border-green-200">
+                        <div class="text-3xl mb-3">🛍️</div>
+                        <h4 class="font-bold text-gray-900 mb-2">Pages Produits</h4>
+                        <p class="text-sm text-gray-600 mb-4">
+                            Optimiser toutes vos pages produits avec structured data
+                        </p>
+                        <button onclick="window.createExampleRule('products')" 
+                                class="text-green-600 font-semibold text-sm hover:text-green-800">
+                            Créer cette règle →
+                        </button>
+                    </div>
+
+                    <div class="bg-purple-50 rounded-lg p-6 border border-purple-200">
+                        <div class="text-3xl mb-3">📝</div>
+                        <h4 class="font-bold text-gray-900 mb-2">Articles Blog</h4>
+                        <p class="text-sm text-gray-600 mb-4">
+                            Ajouter Schema.org Article à tous vos posts
+                        </p>
+                        <button onclick="window.createExampleRule('blog')" 
+                                class="text-purple-600 font-semibold text-sm hover:text-purple-800">
+                            Créer cette règle →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════════════ -->
+            <!-- TAB 7: INSTALLATION -->
+            <!-- ═══════════════════════════════════════════════════════════════════ -->
+            <div id="tab-installation" class="tab-content hidden">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900">Installation du Pixel</h2>
+                    <p class="text-gray-600 mt-2">Installez le pixel de tracking sur vos sites</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">1. Sélectionnez un site</h3>
+                        <select id="installationWebsite" onchange="window.generatePixelCode()" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Choisir un site...</option>
+                        </select>
+
+                        <h3 class="text-xl font-bold text-gray-900 mt-8 mb-4">2. Copiez le code</h3>
+                        <div class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto">
+                            <pre id="pixelCode" class="text-sm"><code>// Sélectionnez d'abord un site</code></pre>
+                        </div>
+                        <button onclick="window.copyPixelCode()" 
+                                class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold">
+                            📋 Copier le Code
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">3. Instructions d'installation</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="border-l-4 border-blue-500 pl-4 py-2">
+                                <h4 class="font-bold text-gray-900 mb-2">WordPress</h4>
+                                <ol class="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                                    <li>Allez dans Apparence > Éditeur de thème</li>
+                                    <li>Ouvrez le fichier header.php</li>
+                                    <li>Collez le code avant &lt;/head&gt;</li>
+                                    <li>Sauvegardez</li>
+                                </ol>
+                            </div>
+
+                            <div class="border-l-4 border-green-500 pl-4 py-2">
+                                <h4 class="font-bold text-gray-900 mb-2">Shopify</h4>
+                                <ol class="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                                    <li>Allez dans Boutique en ligne > Thèmes</li>
+                                    <li>Actions > Modifier le code</li>
+                                    <li>Ouvrez theme.liquid</li>
+                                    <li>Collez le code avant &lt;/head&gt;</li>
+                                    <li>Sauvegardez</li>
+                                </ol>
+                            </div>
+
+                            <div class="border-l-4 border-purple-500 pl-4 py-2">
+                                <h4 class="font-bold text-gray-900 mb-2">Site HTML</h4>
+                                <ol class="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                                    <li>Ouvrez votre fichier index.html</li>
+                                    <li>Collez le code avant &lt;/head&gt;</li>
+                                    <li>Sauvegardez et uploadez</li>
+                                </ol>
+                            </div>
+
+                            <div class="border-l-4 border-yellow-500 pl-4 py-2">
+                                <h4 class="font-bold text-gray-900 mb-2">Google Tag Manager</h4>
+                                <ol class="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                                    <li>Créez une nouvelle balise</li>
+                                    <li>Type: HTML personnalisé</li>
+                                    <li>Collez le code</li>
+                                    <li>Déclencheur: All Pages</li>
+                                    <li>Publiez</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- 🎭 MODALS -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- Add Website Modal -->
+    <div id="addWebsiteModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="modal-overlay fixed inset-0" onclick="window.closeAddWebsiteModal()"></div>
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-8 relative z-10 animate-fade-in">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">Ajouter un Site Web</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nom du site</label>
+                        <input type="text" id="newWebsiteName" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                               placeholder="Mon Super Site">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">URL</label>
+                        <input type="url" id="newWebsiteUrl" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                               placeholder="https://monsite.com">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Langue</label>
+                        <select id="newWebsiteLanguage" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="en">🇬🇧 English</option>
+                            <option value="es">🇪🇸 Español</option>
+                            <option value="de">🇩🇪 Deutsch</option>
+                            <option value="it">🇮🇹 Italiano</option>
+                            <option value="pt">🇵🇹 Português</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex space-x-3 mt-6">
+                        <button onclick="window.closeAddWebsiteModal()" 
+                                class="flex-1 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium">
+                            Annuler
+                        </button>
+                        <button onclick="window.addWebsite()" 
+                                class="flex-1 btn-primary text-white py-3 rounded-lg font-semibold">
+                            Ajouter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pixel Code Modal -->
+    <div id="pixelCodeModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="modal-overlay fixed inset-0 bg-black opacity-50" onclick="window.closePixelCodeModal()"></div>
+            
+            <div class="relative bg-white rounded-xl shadow-2xl max-w-4xl w-full animate-fade-in p-6 z-10">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">
+                        🎯 Code de tracking installé
+                    </h3>
+                    <button onclick="window.closePixelCodeModal()" 
+                            class="text-gray-400 hover:text-gray-600 text-2xl">
+                        ×
+                    </button>
+                </div>
+
+                <!-- Success Message -->
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-green-700">
+                                <strong>Site créé avec succès !</strong> Copiez et installez ce code sur votre site pour commencer le tracking.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Site Info -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <h4 class="font-semibold text-gray-700 mb-2">📊 Informations du site</h4>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="text-gray-500">Nom:</span>
+                            <span class="ml-2 font-medium" id="modalSiteName">-</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">URL:</span>
+                            <span class="ml-2 font-medium" id="modalSiteUrl">-</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Langue:</span>
+                            <span class="ml-2 font-medium" id="modalSiteLanguage">-</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">ID:</span>
+                            <code class="ml-2 bg-white px-2 py-1 rounded text-xs" id="modalSiteId">-</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pixel Code -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-semibold text-gray-700">🔧 Code à installer</h4>
+                        <button onclick="window.copyModalPixelCode()" 
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                            📋 Copier le code
+                        </button>
+                    </div>
+                    
+                    <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto max-h-96">
+                        <pre id="modalPixelCode" class="text-green-400 text-xs font-mono whitespace-pre-wrap"></pre>
+                    </div>
+                </div>
+
+                <!-- Installation Instructions -->
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                    <h4 class="font-semibold text-yellow-800 mb-2">📝 Instructions d'installation</h4>
+                    <ol class="list-decimal list-inside space-y-2 text-sm text-yellow-700">
+                        <li><strong>WordPress:</strong> Apparence → Éditeur de thème → header.php (avant &lt;/head&gt;)</li>
+                        <li><strong>Shopify:</strong> Boutique en ligne → Thèmes → Modifier le code → theme.liquid (avant &lt;/head&gt;)</li>
+                        <li><strong>HTML:</strong> Collez dans le &lt;head&gt; de votre fichier HTML (avant &lt;/head&gt;)</li>
+                        <li><strong>Google Tag Manager:</strong> Créez une balise HTML personnalisée</li>
+                    </ol>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-between items-center">
+                    <button onclick="window.goToInstallationTab()" 
+                            class="text-blue-600 hover:text-blue-700 font-medium">
+                        → Voir tous les codes d'installation
+                    </button>
+                    <button onclick="window.closePixelCodeModal()" 
+                            class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg font-medium transition">
+                        Fermer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invite User Modal -->
+    <div id="inviteUserModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="modal-overlay fixed inset-0" onclick="window.closeInviteUserModal()"></div>
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-8 relative z-10 animate-fade-in">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">Inviter un Utilisateur</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="inviteUserEmail" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                               placeholder="utilisateur@email.com">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                            <input type="text" id="inviteUserFirstName" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                   placeholder="Jean">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                            <input type="text" id="inviteUserLastName" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                   placeholder="Dupont">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Rôle</label>
+                        <select id="inviteUserRole" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="user">👤 Utilisateur</option>
+                            <option value="admin">👑 Administrateur</option>
+                            <option value="viewer">👁️ Observateur</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex space-x-3 mt-6">
+                        <button onclick="window.closeInviteUserModal()" 
+                                class="flex-1 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium">
+                            Annuler
+                        </button>
+                        <button onclick="window.inviteUser()" 
+                                class="flex-1 btn-primary text-white py-3 rounded-lg font-semibold">
+                            Inviter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+        <div class="bg-white rounded-xl p-8 shadow-2xl text-center">
+            <div class="spinner mx-auto mb-4"></div>
+            <p class="text-gray-700 font-medium" id="loadingText">Chargement...</p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- 🎬 JAVASCRIPT -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <script>
+        // ═══════════════════════════════════════════════════════════════════
+        console.log("🚀 ==== SCRIPT CHARGÉ ====");
+        console.log("✅ window.login sera défini dans quelques lignes...");
+        // 🔧 CONFIGURATION
+        // ═══════════════════════════════════════════════════════════════════
+        
+        const API_URL = 'https://alteaseo-production.up.railway.app';
+        
+        let currentUser = null;
+        let currentToken = null;
+        let currentTab = 'dashboard';
+        let generatedContent = null;
+
+        // ═══════════════════════════════════════════════════════════════════
+        // 🔐 AUTHENTICATION FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════
+
+        window.login = async function() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                window.showNotification('Veuillez remplir tous les champs', 'error');
+                return;
+            }
+
+            window.showLoading('Connexion en cours...');
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentUser = data.user;
+                    currentToken = data.token;
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    window.showNotification('Connexion réussie !', 'success');
+                    showDashboard();
+                } else {
+                    window.showNotification(data.error || 'Erreur de connexion', 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                window.showNotification('Erreur de connexion au serveur', 'error');
+            } finally {
+                window.hideLoading();
+            }
+        }
+        console.log("✅ window.login définie:", typeof window.login);
+
+        window.register = async function() {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const firstName = document.getElementById('registerFirstName').value;
+            const lastName = document.getElementById('registerLastName').value;
+            const organizationName = document.getElementById('registerOrganization').value;
+
+            if (!email || !password || !firstName || !lastName || !organizationName) {
+                window.showNotification('Veuillez remplir tous les champs', 'error');
+                return;
+            }
+
+            window.showLoading('Création du compte...');
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, firstName, lastName, organizationName })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentUser = data.user;
+                    currentToken = data.token;
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    window.showNotification('Compte créé avec succès !', 'success');
+                    showDashboard();
+                } else {
+                    window.showNotification(data.error || 'Erreur lors de l\'inscription', 'error');
+                }
+            } catch (error) {
+                console.error('Register error:', error);
+                window.showNotification('Erreur de connexion au serveur', 'error');
+            } finally {
+                window.hideLoading();
+            }
+        }
+
+        window.logout = function() {
+            currentUser = null;
+            currentToken = null;
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            
+            document.getElementById('dashboardPage').classList.add('hidden');
+            document.getElementById('authPage').classList.remove('hidden');
+            
+            window.showNotification('Déconnexion réussie', 'success');
+        }
+
+        window.showLoginForm = function() {
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+        window.showRegisterForm = function() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // 📊 DASHBOARD FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════
+
+        window.showDashboard = async function() {
+            document.getElementById('authPage').classList.add('hidden');
+            document.getElementById('dashboardPage').classList.remove('hidden');
+            
+            // Update user info
+            document.getElementById('userInfo').textContent = 
+                `${currentUser.firstName} ${currentUser.lastName} • ${currentUser.organization?.name || 'Organisation'}`;
+            
+            // Load dashboard data
+            await refreshDashboard();
+            
+            // Set first tab as active
+            switchTab('dashboard');
+        }
+
+        window.refreshDashboard = async function() {
+            window.showLoading('Actualisation...');
+            
+            try {
+                await Promise.all([
+                    loadStats(),
+                    loadWebsites(),
+                    loadContents(),
+                    loadUsers(),
+                    loadRecentActivity()
+                ]);
+                
+                window.showNotification('Dashboard actualisé', 'success');
+            } catch (error) {
+                console.error('Refresh error:', error);
+                window.showNotification('Erreur lors de l\'actualisation', 'error');
+            } finally {
+                window.hideLoading();
+            }
+        }
+
+        window.loadStats = async function() {
+            try {
+                const headers = { 'Authorization': `Bearer ${currentToken}` };
+                
+                const [websites, contents, analytics, users] = await Promise.all([
+                    fetch(`${API_URL}/api/websites`, { headers }).then(r => r.json()),
+                    fetch(`${API_URL}/api/content`, { headers }).then(r => r.json()),
+                    fetch(`${API_URL}/api/analytics`, { headers }).then(r => r.json()),
+                    fetch(`${API_URL}/api/users`, { headers }).then(r => r.json())
+                ]);
+                
+                document.getElementById('statsWebsites').textContent = websites.websites?.length || 0;
+                document.getElementById('statsContents').textContent = contents.contents?.length || 0;
+                document.getElementById('statsAnalytics').textContent = analytics.data?.length || 0;
+                document.getElementById('statsUsers').textContent = users.users?.length || 0;
+            } catch (error) {
+                console.error('Load stats error:', error);
+            }
+        }
+
+        window.loadRecentActivity = async function() {
+            try {
+                const response = await fetch(`${API_URL}/api/analytics/recent`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                
+                const data = await response.json();
+                
+                const activityHTML = data.activities?.map(activity => `
+                    <div class="flex items-center space-x-4 p-4 hover:bg-gray-50 rounded-lg">
+                        <div class="text-2xl">${getActivityIcon(activity.type)}</div>
+                        <div class="flex-1">
+                            <p class="font-medium text-gray-900">${activity.description}</p>
+                            <p class="text-sm text-gray-500">${formatDate(activity.createdAt)}</p>
+                        </div>
+                    </div>
+                `).join('') || '<p class="text-gray-500 text-center py-8">Aucune activité récente</p>';
+                
+                document.getElementById('recentActivity').innerHTML = activityHTML;
+            } catch (error) {
+                console.error('Load activity error:', error);
+                document.getElementById('recentActivity').innerHTML = 
+                    '<p class="text-gray-500 text-center py-8">Erreur de chargement</p>';
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // 🌐 WEBSITES FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════
+
+        window.loadWebsites = async function() {
+            const language = document.getElementById('filterLanguage')?.value || '';
+            
+            try {
+                let url = `${API_URL}/api/websites`;
+                if (language) url += `?language=${language}`;
+                
+                const response = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.websites) {
+                    // Stocker les sites pour pouvoir les réutiliser
+                    window.currentWebsites = data.websites;
+                    
+                    const websitesHTML = data.websites.map(website => `
+                        <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow border-2 border-gray-100 hover:border-blue-200">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex-1">
+                                    <h3 class="text-xl font-bold text-gray-900 mb-1">${website.name}</h3>
+                                    <a href="${website.url}" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
+                                        ${website.url}
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                                <div class="flex flex-col items-end gap-2">
+                                    <span class="text-3xl">${getLanguageFlag(website.language)}</span>
+                                    <span class="text-xs font-medium px-2 py-1 rounded-full bg-blue-50 text-blue-700">
+                                        ${website.language.toUpperCase()}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- ID du site -->
+                            <div class="mb-4 p-2 bg-gray-50 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-gray-500 font-medium">ID du site:</span>
+                                    <code class="text-xs font-mono bg-white px-2 py-1 rounded border border-gray-200">${website._id}</code>
+                                </div>
+                            </div>
+                            
+                            <!-- Boutons d'action -->
+                            <div class="flex gap-2 mt-4">
+                                <button onclick="window.showPixelCodeForWebsite('${website._id}')" 
+                                        class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm hover:shadow flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                                    </svg>
+                                    <span>Voir le code</span>
+                                </button>
+                                <button onclick="window.deleteWebsite('${website._id}')" 
+                                        class="bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all border border-red-200 hover:border-red-300"
+                                        title="Supprimer le site">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <!-- Footer avec date -->
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                                <div class="flex items-center gap-2 text-xs text-gray-500">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    <span>${formatDate(website.createdAt)}</span>
+                                </div>
+                                <div class="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                    <span>Actif</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    document.getElementById('websitesList').innerHTML = websitesHTML || 
+                        '<p class="text-gray-500 text-center py-8 col-span-full">Aucun site trouvé</p>';
+                    
+                    // Update dropdowns
+                    updateWebsiteDropdowns(data.websites);
+                }
+            } catch (error) {
+                console.error('Load websites error:', error);
+                document.getElementById('websitesList').innerHTML = 
+                    '<p class="text-gray-500 text-center py-8 col-span-full">Erreur de chargement</p>';
+            }
+        }
+
+        function updateWebsiteDropdowns(websites) {
+            const dropdowns = ['contentWebsite', 'analyticsWebsite', 'installationWebsite'];
+            
+            dropdowns.forEach(dropdownId => {
+                const dropdown = document.getElementById(dropdownId);
+                if (dropdown) {
+                    const currentValue = dropdown.value;
+                    dropdown.innerHTML = '<option value="">Sélectionner un site...</option>' +
+                        websites.map(w => `<option value="${w._id}">${w.name} (${w.url})</option>`).join('');
+                    dropdown.value = currentValue;
+                }
+            });
+        }
+
+        window.addWebsite = async function() {
+            const name = document.getElementById('newWebsiteName').value;
+            const url = document.getElementById('newWebsiteUrl').value;
+            const language = document.getElementById('newWebsiteLanguage').value;
+
+            if (!name || !url || !language) {
+                window.showNotification('Veuillez remplir tous les champs', 'error');
+                return;
+            }
+
+            window.showLoading('Ajout du site...');
+
+            try {
+                const response = await fetch(`${API_URL}/api/websites`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify({ name, url, language })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.showNotification('Site ajouté avec succès !', 'success');
+                    closeAddWebsiteModal();
+                    
+                    // ✨ Afficher le code pixel automatiquement
+                    setTimeout(() => {
+                        window.showPixelCodeModal(data.website);
+                    }, 500);
+                    
+                    await loadWebsites();
+                } else {
+                    window.showNotification(data.error || 'Erreur lors de l\'ajout', 'error');
+                }
+            } catch (error) {
+                console.error('Add website error:', error);
+                window.showNotification('Erreur de connexion au serveur', 'error');
+            } finally {
+                window.hideLoading();
+            }
+        }
+
+        async function deleteWebsite(websiteId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce site ?')) return;
+
+            window.showLoading('Suppression...');
+
+            try {
+                const response = await fetch(`${API_URL}/api/websites/${websiteId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.showNotification('Site supprimé', 'success');
+                    await loadWebsites();
+                } else {
+                    window.showNotification(data.error || 'Erreur lors de la suppression', 'error');
+                }
+            } catch (error) {
+                console.error('Delete website error:', error);
+                window.showNotification('Erreur de connexion au serveur', 'error');
+            } finally {
+                window.hideLoading();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // ✍️ CONTENT GENERATION FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════
+
+        window.generateContent = async function() {
+            const websiteId = document.getElementById('contentWebsite').value;
+            const contentType = document.getElementById('contentType').value;
+            const topic = document.getElementById('contentTopic').value;
+            const keywords = document.getElementById('contentKeywords').value;
+            const language = document.getElementById('contentLanguage').value;
+            const instructions = document.getElementById('contentInstructions').value;
+
+            if (!websiteId || !topic || !keywords) {
+                window.showNotification('Veuillez remplir les champs obligatoires', 'error');
+                return;
+            }
+
+            window.showLoading('Génération du contenu avec Claude AI...');
+
+            try {
+                const response = await fetch(`${API_URL}/api/content/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify({
+                        websiteId,
+                        contentType,
+                        topic,
+                        keywords: keywords.split(',').map(k => k.trim()),
+                        language,
+                        instructions
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    generatedContent = data.content;
+                    displayGeneratedContent(data.content);
+                    window.showNotification('Contenu généré avec succès !', 'success');
+                } else {
+                    window.showNotification(data.error || 'Erreur lors de la génération', 'error');
+                }
+            } catch (error) {
+                console.error('Generate content error:', error);
+                window.showNotification('Erreur de connexion au serveur', 'error');
+            } finally {
+                window.hideLoading();
+            }
+        }
+
+        function displayGeneratedContent(content) {
+            const previewHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-bold text-gray-900 mb-2">${content.title || 'Titre'}</h4>
+                        <div class="text-sm text-gray-700 whitespace-pre-wrap">${content.content || ''}</div>
+                    </div>
+                    ${content.metadata?.metaDescription ? `
+                        <div class="border-t pt-4">
+                            <h5 class="text-sm font-bold text-gray-700 mb-1">Meta Description:</h5>
+                            <p class="text-sm text-gray-600">${content.metadata.metaDescription}</p>
+                        </div>
+                    ` : ''}
+                    ${content.metadata?.keywords?.length ? `
+                        <div class="border-t pt-4">
+                            <h5 class="text-sm font-bold text-gray-700 mb-2">Mots-clés:</h5>
+                            <div class="flex flex-wrap gap-2">
+                                ${content.metadata.keywords.map(k => 
+                                    `<span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">${k}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            document.getElementById('contentPreview').innerHTML = previewHTML;
+            document.getElementById('contentActions').classList.remove('hidden');
+        }
+
+        window.saveContent = async function() {
+            if (!generatedContent) {
+                window.showNotification('Aucun contenu à sauvegarder', 'error');
+                return;
+            }
+
+            window.showLoading('Sauvegarde...');
+
+            try {
+                const response = await fetch(`${API_URL}/api/content`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify(generatedContent)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.showNotification('Contenu sauvegardé !', 'success');
+                    await loadContents();
+                } else {
+                    window.showNotification(data.error || 'Erreur lors de la sauvegarde', 'error');
+                }
+            } catch (error) {
+                console.error('Save content error:', error);
+                window.showNotification('Erreur de connexion au serveur', 'error');
+            } finally {
+                window.hideLoading();
+            }
+        }
+
+        window.copyContent = function() {
+            if (!generatedContent) {
+                window.showNotification('Aucun contenu à copier', 'error');
+                return;
+            }
+
+            const textToCopy = `${generatedContent.title}\n\n${generatedContent.content}`;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                window.showNotification('Contenu copié dans le presse-papier !', 'success');
+            }).catch(() => {
+                window.showNotification('Erreur lors de la copie', 'error');
+            });
+        }
+
+        window.loadContents = async function() {
+            try {
+                const response = await fetch(`${API_URL}/api/content`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.contents) {
+                    const contentsHTML = data.contents.slice(0, 10).map(content => `
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-gray-900">${content.title}</h4>
+                                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">${content.contentType}</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2 line-clamp-2">${content.content.substring(0, 100)}...</p>
+                            <div class="flex justify-between items-center text-xs text-gray-500">
+                                <span>${getLanguageFlag(content.language)} ${formatDate(content.createdAt)}</span>
+                                <div class="space-x-2">
+                                    <button onclick="window.exportContentItemAsPDF('${content._id}')" 
+                                            class="text-red-600 hover:text-red-800 font-medium">
+                                        📄 PDF
+                                    </button>
+                                    <button onclick="window.deleteContent('${content._id}')" 
+                                            class="text-red-600 hover:text-red-800 font-medium">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    document.getElementById('contentsList').innerHTML = contentsHTML || 
+                        '<p class="text-gray-500 text-center py-8">Aucun contenu trouvé</p>';
+                }
+            } catch (error) {
+                console.error('Load contents error:', error);
+            }
+        }
+
+        async function deleteContent(contentId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce contenu ?')) return;
+
+            window.showLoading('Suppression...');
+
+            try {
+                const response = await fetch(`${API_URL}/api/content/${contentId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.showNotification('Contenu supprimé', 'success');
+                    await loadContents();
+                } else {
+                    window.showNotification(data.error || 'Erreur lors de la suppression', 'error');
+                }
+            } catch (error) {
+                console.error('Delete content error:', error);
+                window.showNotification('Erreur de connexion au serveur', 'error');
+            } finally {
+                window.hideLoading();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // 📄 PDF EXPORT FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════
+
+        window.exportContentAsPDF = async function() {
+            if (!generatedContent) {
+                window.showNotification('Aucun contenu à exporter', 'error');
+                return;
+            }
+
+            window.showLoading('Génération du PDF...');
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Add header
+                doc.setFontSize(20);
+                doc.setTextColor(59, 130, 246);
+                doc.text('SEO Platform - Contenu Généré', 20, 20);
+                
+                // Add date
+                doc.setFontSize(10);
+                doc.setTextColor(107, 114, 128);
+                doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')}`, 20, 30);
+                
+                // Add line
+                doc.setDrawColor(59, 130, 246);
+                doc.setLineWidth(0.5);
+                doc.line(20, 35, 190, 35);
+                
+                // Add title
+                doc.setFontSize(16);
+                doc.setTextColor(0, 0, 0);
+                doc.text(generatedContent.title || 'Sans titre', 20, 45);
+                
+                // Add content
+                doc.setFontSize(11);
+                doc.setTextColor(55, 65, 81);
+                const contentLines = doc.splitTextToSize(generatedContent.content || '', 170);
+                doc.text(contentLines, 20, 55);
+                
+                // Add metadata if exists
+                let yPosition = 55 + (contentLines.length * 5);
+                
+                if (generatedContent.metadata?.metaDescription) {
+                    yPosition += 10;
+                    if (yPosition > 270) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                    doc.setFontSize(12);
+                    doc.setTextColor(59, 130, 246);
+                    doc.text('Meta Description:', 20, yPosition);
+                    doc.setFontSize(10);
+                    doc.setTextColor(55, 65, 81);
+                    const metaLines = doc.splitTextToSize(generatedContent.metadata.metaDescription, 170);
+                    doc.text(metaLines, 20, yPosition + 5);
+                    yPosition += 5 + (metaLines.length * 5);
+                }
+                
+                if (generatedContent.metadata?.keywords?.length) {
+                    yPosition += 10;
+                    if (yPosition > 270) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                    doc.setFontSize(12);
+                    doc.setTextColor(59, 130, 246);
+                    doc.text('Mots-clés:', 20, yPosition);
+                    doc.setFontSize(10);
+                    doc.setTextColor(55, 65, 81);
+                    doc.text(generatedContent.metadata.keywords.join(', '), 20, yPosition + 5);
+                }
+                
+                // Add footer
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(156, 163, 175);
+                    doc.text(`Page ${i} sur ${pageCount}`, 105, 290, { align: 'center' });
+                    doc.text('Créé avec SEO Platform', 105, 295, { align: 'center' });
+                }
+                
+                // Save PDF
+                const filename = `seo-content-${Date.now()}.pdf`;
+                doc.save(filename);
+                
+                window.showNotification('PDF exporté avec succès !', 'success');
+            } catch (error) {
+                console.error('PDF export error:', error);
+                window.showNotification('Erreur lors de l\'export PDF', 'error');
+            } finally {
+                window.hideLoading();
+            }
+        }
+
+        async function exportContentItemAsPDF(contentId) {
+            window.showLoading('Chargement du contenu...');
+
+            try {
+                const response = await fetch(`${API_URL}/api/content/${contentId}`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.content) {
+                    generatedContent = data.content;
+                    await exportContentAsPDF();
+                } else {
+                    window.showNotification('Contenu introuvable', 'error');
+                }
+            } catch (error) {
+                console.error('Load content error:', error);
+                window.showNotification('Erreur de chargement', 'error');
+            } finally {
+                window.hideLoading();
+            }
+        }
+
+        window.exportAnalyticsReport = async function() {
+            window.showLoading('Génération du rapport PDF...');
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Header
+                doc.setFontSize(20);
+                doc.setTextColor(59, 130, 246);
+                doc.text('Rapport d\'Analyse SEO', 20, 20);
+                
+                doc.setFontSize(10);
+                doc.setTextColor(107, 114, 128);
+                doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}`, 20, 30);
+                
+                doc.setDrawColor(59, 130, 246);
+                doc.setLineWidth(0.5);
+                doc.line(20, 35, 190, 35);
+                
+                // Organization info
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Organisation: ${currentUser.organization?.name || 'N/A'}`, 20, 45);
+                doc.text(`Utilisateur: ${currentUser.firstName} ${currentUser.lastName}`, 20, 52);
+                
+                // Stats
+                let yPos = 65;
+                doc.setFontSize(14);
+                doc.setTextColor(59, 130, 246);
+                doc.text('Statistiques Globales', 20, yPos);
+                
+                yPos += 10;
+                doc.setFontSize(11);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Sites Web: ${document.getElementById('statsWebsites').textContent}`, 30, yPos);
+                yPos += 7;
+                doc.text(`Contenus Générés: ${document.getElementById('statsContents').textContent}`, 30, yPos);
+                yPos += 7;
+                doc.text(`Pages Analysées: ${document.getElementById('statsAnalytics').textContent}`, 30, yPos);
+                yPos += 7;
+                doc.text(`Utilisateurs: ${document.getElementById('statsUsers').textContent}`, 30, yPos);
+                
+                // Footer
+                doc.setFontSize(8);
+                doc.setTextColor(156, 163, 175);
+                doc.text('SEO Platform - Multi-User, Multi-Site, Multi-Language', 105, 290, { align: 'center' });
+                
+                // Save
+                const filename = `seo-report-${Date.now()}.pdf`;
+                doc.save(filename);
+                
+                window.showNotification('Rapport PDF exporté !', 'success');
+            } catch (error) {
+                console.error('Export report error:', error);
+                window.showNotification('Erreur lors de l\'export', 'error');
+            } finally {
+                window.hideLoading();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // 📈 ANALYTICS FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════
+
+        window.loadAnalytics = async function() {
+            const websiteId = document.getElementById('analyticsWebsite')?.value || '';
+            
+            try {
+                let url = `${API_URL}/api/analytics`;
+                if (websiteId) url += `?website=${websiteId}`;
+                
+                const response = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    const analyticsHTML = data.data.length > 0 ? data.data.map(item => `
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">${item.url || 'Page'}</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-sm text-gray-600">Pages vues</p>
+                                    <p class="text-2xl font-bold text-gray-900">${item.pageviews || 0}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600">Temps moyen</p>
+                                    <p class="text-2xl font-bold text-gray-900">${item.avgTime || 0}s</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('') : '<p class="text-gray-500 text-center py-8">Aucune donnée d\'analyse disponible</p>';
+                    
+                    document.getElementById('analyticsData').innerHTML = analyticsHTML;
+                }
+            } catch (error) {
+                console.error('Load analytics error:', error);
+                document.getElementById('analyticsData').innerHTML = 
+                    '<p class="text-gray-500 text-center py-8">Erreur de chargement</p>';
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // 👥 USERS FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════
+
+        window.loadUsers = async function() {
+            try {
+                const response = await fetch(`${API_URL}/api/users`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.users) {
+                    const usersHTML = `
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Utilisateur</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rôle</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                ${data.users.map(user => `
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4">
+                                            <div class="font-medium text-gray-900">${user.firstName} ${user.lastName}</div>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-500">${user.email}</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 text-xs font-semibold rounded ${getRoleBadgeClass(user.role)}">
+                                                ${getRoleText(user.role)}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 text-xs font-semibold rounded ${user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                                ${user.isActive ? 'Actif' : 'Inactif'}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            ${user._id !== currentUser._id ? `
+                                                <button onclick="window.deleteUser('${user._id}')" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                                    Supprimer
+                                                </button>
+                                            ` : '<span class="text-gray-400 text-sm">Vous</span>'}
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                    
+                    document.getElementById('usersList').innerHTML = usersHTML;
+                }
+            } catch (error) {
+                console.error('Load users error:', error);
+                document.getElementById('usersList').innerHTML = 
+                    '<p class="text-gray-500 text-center py-8">Erreur de chargement</p>';
+            }
+        }
+
+        window.inviteUser = async function() {
+            const email = document.getElementById('inviteUserEmail').value;
+            const firstName = document.getElementById('inviteUserFirstName').value;
+            const lastName = document.getElementById('inviteUserLastName').value;
+            const role = document.getElementById('inviteUserRole').value;
+
+            if (!email || !firstName || !lastName) {
+                window.showNotification('Veuillez remplir tous les champs', 'error');
+                return;
+            }
+
+            window.showLoading('Invitation en cours...');
+
+            try {
+                const response = await fetch(`${API_URL}/api/users/invite`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify({ email, firstName, lastName, role })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.showNotification('Utilisateur invité avec succès !', 'success');
+                    closeInviteUserModal();
+                    await loadUsers();
+                } else {
+                    window.showNotification(data.error || 'Erreur lors de l\'invitation', 'error');
+                }
+            } catch (error) {
+                console.error('Invite user error:', error);
+                window.showNotification('Erreur de connexion au serveur', 'error');
+            } finally {
+                window.hideLoading();
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) return;
+
+            window.showLoading('Suppression...');
+
+            try {
+                const response = await fetch(`${API_URL}/api/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.showNotification('Utilisateur supprimé', 'success');
+                    await loadUsers();
+                } else {
+                    window.showNotification(data.error || 'Erreur lors de la suppression', 'error');
+                }
+            } catch (error) {
+                console.error('Delete user error:', error);
+                window.showNotification('Erreur de connexion au serveur', 'error');
+            } finally {
+                window.hideLoading();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // ⚙️ INSTALLATION/PIXEL FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════
+
+        window.generatePixelCode = function() {
+            const websiteId = document.getElementById('installationWebsite').value;
+            
+            if (!websiteId) {
+                document.getElementById('pixelCode').innerHTML = '<code>// Sélectionnez d\'abord un site</code>';
+                return;
+            }
+
+            const pixelCode = `<script>
+(function() {
+    var config = {
+        siteId: '${websiteId}',
+        apiEndpoint: '${API_URL}',
+        autoOptimize: true
+    };
+    
+    // Tracking function
+    function trackPage() {
+        var data = {
+            url: window.location.href,
+            title: document.title,
+            referrer: document.referrer,
+            timestamp: new Date().toISOString()
+        };
+        
+        var img = new Image();
+        img.src = config.apiEndpoint + '/pixel.gif?site=' + config.siteId + 
+                  '&url=' + encodeURIComponent(data.url) +
+                  '&title=' + encodeURIComponent(data.title);
+    }
+    
+    // Track on load
+    if (document.readyState === 'complete') {
+        trackPage();
+    } else {
+        window.addEventListener('load', trackPage);
+    }
+    
+    // Track on navigation (SPA support)
+    var originalPushState = history.pushState;
+    history.pushState = function() {
+        originalPushState.apply(this, arguments);
+        trackPage();
+    };
+})();
+<\/script>`;
+
+            document.getElementById('pixelCode').innerHTML = `<code>${escapeHtml(pixelCode)}</code>`;
+        }
+
+        window.copyPixelCode = function() {
+            const code = document.getElementById('pixelCode').textContent;
+            
+            if (code.includes('Sélectionnez')) {
+                window.showNotification('Veuillez d\'abord sélectionner un site', 'error');
+                return;
+            }
+            
+            navigator.clipboard.writeText(code).then(() => {
+                window.showNotification('Code copié dans le presse-papier !', 'success');
+            }).catch(() => {
+                window.showNotification('Erreur lors de la copie', 'error');
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // 🎯 MODAL DE CODE PIXEL (NOUVEAU)
+        // ═══════════════════════════════════════════════════════════════════
+
+        /**
+         * Afficher la modal avec le code pixel pour un site
+         */
+        window.showPixelCodeModal = function(website) {
+            if (!website || !website._id) {
+                console.error('Website data is missing');
+                return;
+            }
+
+            // Remplir les informations du site
+            document.getElementById('modalSiteName').textContent = website.name || '-';
+            document.getElementById('modalSiteUrl').textContent = website.url || '-';
+            document.getElementById('modalSiteLanguage').textContent = window.getLanguageFlag(website.language) + ' ' + website.language.toUpperCase();
+            document.getElementById('modalSiteId').textContent = website._id;
+
+            // Générer le code pixel
+            const pixelCode = generatePixelCodeForSite(website._id);
+            document.getElementById('modalPixelCode').textContent = pixelCode;
+
+            // Afficher la modal
+            document.getElementById('pixelCodeModal').classList.remove('hidden');
+        }
+
+        /**
+         * Fermer la modal de code pixel
+         */
+        window.closePixelCodeModal = function() {
+            document.getElementById('pixelCodeModal').classList.add('hidden');
+        }
+
+        /**
+         * Copier le code pixel depuis la modal
+         */
+        window.copyModalPixelCode = function() {
+            const code = document.getElementById('modalPixelCode').textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                window.showNotification('✅ Code copié dans le presse-papier !', 'success');
+            }).catch(() => {
+                window.showNotification('❌ Erreur lors de la copie', 'error');
+            });
+        }
+
+        /**
+         * Aller à l'onglet installation
+         */
+        window.goToInstallationTab = function() {
+            window.closePixelCodeModal();
+            window.switchTab('installation');
+        }
+
+        /**
+         * Afficher le code pixel pour un site existant (via le bouton sur la carte)
+         */
+        window.showPixelCodeForWebsite = function(websiteId) {
+            // Trouver le site dans la liste actuelle
+            const website = window.currentWebsites?.find(w => w._id === websiteId);
+            
+            if (website) {
+                window.showPixelCodeModal(website);
+            } else {
+                // Si on n'a pas le site en cache, faire une requête
+                window.showLoading('Chargement...');
+                fetch(`${API_URL}/api/websites/${websiteId}`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    window.hideLoading();
+                    if (data.success && data.website) {
+                        window.showPixelCodeModal(data.website);
+                    } else {
+                        window.showNotification('Site introuvable', 'error');
+                    }
+                })
+                .catch(error => {
+                    window.hideLoading();
+                    console.error('Error fetching website:', error);
+                    window.showNotification('Erreur lors du chargement', 'error');
+                });
+            }
+        }
+
+        /**
+         * Générer le code pixel pour un site spécifique
+         */
+        function generatePixelCodeForSite(siteId) {
+            const scriptOpen = '<' + 'script>';
+            const scriptClose = '<' + '/script>';
+            
+            return scriptOpen + `
+(function() {
+    var config = {
+        siteId: '${siteId}',
+        apiEndpoint: '${API_URL}',
+        autoOptimize: true,
+        trackClicks: true,
+        trackScrollDepth: true,
+        debug: false
+    };
+
+    function collectPageData() {
+        return {
+            url: window.location.href,
+            path: window.location.pathname,
+            title: document.title,
+            referrer: document.referrer || 'direct',
+            userAgent: navigator.userAgent,
+            language: navigator.language,
+            timestamp: new Date().toISOString(),
+            meta: {
+                description: getMetaContent('description'),
+                keywords: getMetaContent('keywords'),
+                ogTitle: getMetaContent('og:title'),
+                ogDescription: getMetaContent('og:description')
+            }
+        };
+    }
+
+    function getMetaContent(name) {
+        var meta = document.querySelector('meta[name="' + name + '"]') || 
+                   document.querySelector('meta[property="' + name + '"]');
+        return meta ? meta.getAttribute('content') : '';
+    }
+
+    function sendPixelData() {
+        var data = collectPageData();
+        var pixelUrl = config.apiEndpoint + '/pixel.gif?' + 
+            'siteId=' + encodeURIComponent(config.siteId) + 
+            '&data=' + encodeURIComponent(JSON.stringify(data)) +
+            '&t=' + new Date().getTime();
+        
+        var img = new Image(1, 1);
+        img.src = pixelUrl;
+
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon(
+                config.apiEndpoint + '/api/tracking/beacon',
+                JSON.stringify({ siteId: config.siteId, data: data })
+            );
+        }
+    }
+
+    if (document.readyState === 'complete') {
+        sendPixelData();
+    } else {
+        window.addEventListener('load', sendPixelData);
+    }
+
+    if (config.trackClicks) {
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') {
+                var clickData = { 
+                    href: e.target.href, 
+                    text: e.target.innerText.substring(0, 50) 
+                };
+                if (navigator.sendBeacon) {
+                    navigator.sendBeacon(
+                        config.apiEndpoint + '/api/tracking/event',
+                        JSON.stringify({ 
+                            siteId: config.siteId, 
+                            event: 'click', 
+                            data: clickData 
+                        })
+                    );
+                }
+            }
+        });
+    }
+
+    if (config.trackScrollDepth) {
+        var scrollDepths = [25, 50, 75, 100];
+        var tracked = {};
+        
+        window.addEventListener('scroll', function() {
+            var scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            
+            scrollDepths.forEach(function(depth) {
+                if (scrollPercent >= depth && !tracked[depth]) {
+                    tracked[depth] = true;
+                    if (navigator.sendBeacon) {
+                        navigator.sendBeacon(
+                            config.apiEndpoint + '/api/tracking/event',
+                            JSON.stringify({ 
+                                siteId: config.siteId, 
+                                event: 'scroll_depth', 
+                                data: { depth: depth + '%' } 
+                            })
+                        );
+                    }
+                }
+            });
+        });
+    }
+
+    var pageLoadTime = Date.now();
+    
+    window.addEventListener('beforeunload', function() {
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon(
+                config.apiEndpoint + '/api/tracking/beacon',
+                JSON.stringify({ 
+                    siteId: config.siteId, 
+                    event: 'page_leave',
+                    data: { duration: Date.now() - pageLoadTime }
+                })
+            );
+        }
+    });
+    
+    if (config.debug) {
+        console.log('[SEO Platform] Pixel chargé avec succès!', config);
+    }
+})();
+` + scriptClose;
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // 🎨 UI HELPER FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('tab-active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            
+            // Add active class to selected button
+            const activeButton = document.querySelector(`[data-tab="${tabName}"]`);
+            if (activeButton) {
+                activeButton.classList.add('tab-active');
+            }
+            
+            // Load tab-specific data
+            switch(tabName) {
+                case 'websites':
+                    loadWebsites();
+                    break;
+                case 'content':
+                    loadWebsites();
+                    loadContents();
+                    break;
+                case 'analytics':
+                    loadWebsites();
+                    loadAnalytics();
+                    break;
+                case 'users':
+                    loadUsers();
+                    break;
+                case 'seopixel':
+                    loadWebsites();
+                    loadSEORules();
+                    // Populate website selects
+                    setTimeout(() => {
+                        if (window.currentWebsites) {
+                            const selects = ['pixelWebsiteSelect', 'ruleWebsiteFilter'];
+                            selects.forEach(selectId => {
+                                const select = document.getElementById(selectId);
+                                if (select) {
+                                    const currentValue = select.value;
+                                    select.innerHTML = '<option value="">Choisir un site...</option>' +
+                                        window.currentWebsites.map(w => 
+                                            `<option value="${w._id}">${escapeHtml(w.name)}</option>`
+                                        ).join('');
+                                    if (currentValue) select.value = currentValue;
+                                }
+                            });
+                        }
+                    }, 100);
+                    break;
+                case 'installation':
+                    loadWebsites();
+                    break;
+            }
+        }
+
+        window.showAddWebsiteModal = function() {
+            document.getElementById('addWebsiteModal').classList.remove('hidden');
+        }
+
+        window.closeAddWebsiteModal = function() {
+            document.getElementById('addWebsiteModal').classList.add('hidden');
+            document.getElementById('newWebsiteName').value = '';
+            document.getElementById('newWebsiteUrl').value = '';
+        }
+
+        window.showInviteUserModal = function() {
+            document.getElementById('inviteUserModal').classList.remove('hidden');
+        }
+
+        window.closeInviteUserModal = function() {
+            document.getElementById('inviteUserModal').classList.add('hidden');
+            document.getElementById('inviteUserEmail').value = '';
+            document.getElementById('inviteUserFirstName').value = '';
+            document.getElementById('inviteUserLastName').value = '';
+        }
+
+        window.showLoading = function(text = 'Chargement...') {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
+
+        window.hideLoading = function() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        window.showNotification = function(message, type = 'info') {
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500',
+                warning: 'bg-yellow-500'
+            };
+            
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // 🔧 UTILITY FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════
+
+        window.getLanguageFlag = function(language) {
+            const flags = {
+                'en': '🇬🇧',
+                'fr': '🇫🇷',
+                'es': '🇪🇸',
+                'de': '🇩🇪',
+                'it': '🇮🇹',
+                'pt': '🇵🇹',
+                'nl': '🇳🇱',
+                'ru': '🇷🇺',
+                'ja': '🇯🇵',
+                'zh': '🇨🇳'
+            };
+            return flags[language] || '🌐';
+        }
+
+        window.getActivityIcon = function(type) {
+            const icons = {
+                'content': '✍️',
+                'website': '🌐',
+                'user': '👥',
+                'analytics': '📊'
+            };
+            return icons[type] || '📌';
+        }
+
+        window.getRoleText = function(role) {
+            const roles = {
+                'admin': '👑 Admin',
+                'user': '👤 Utilisateur',
+                'viewer': '👁️ Observateur'
+            };
+            return roles[role] || role;
+        }
+
+        window.getRoleBadgeClass = function(role) {
+            const classes = {
+                'admin': 'bg-purple-100 text-purple-800',
+                'user': 'bg-blue-100 text-blue-800',
+                'viewer': 'bg-gray-100 text-gray-800'
+            };
+            return classes[role] || 'bg-gray-100 text-gray-800';
+        }
+
+        window.formatDate = function(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-FR', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        window.escapeHtml = function(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // 🎯 SEO PIXEL MANAGEMENT FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════
+
+        window.generateSEOPixelCode = function() {
+            const websiteSelect = document.getElementById('pixelWebsiteSelect');
+            const websiteId = websiteSelect.value;
+            
+            if (!websiteId) {
+                document.getElementById('pixelCodeSection').style.display = 'none';
+                return;
+            }
+
+            const website = window.currentWebsites?.find(w => w._id === websiteId);
+            const siteId = website?.siteId || websiteId;
+
+            const scriptOpen = '<' + 'script>';
+            const scriptClose = '<' + '/script>';
+
+            const pixelCode = `<!-- SEO Pixel Configuration -->
+${scriptOpen}
+window.seoPixelConfig = {
+    siteId: '${siteId}',
+    apiEndpoint: '${API_URL}',
+    brand: '${website?.name || 'Votre Marque'}',
+    debug: false  // true pour dev, false pour production
+};
+${scriptClose}
+
+<!-- SEO Pixel Script -->
+${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js" async${scriptClose}`;
+
+            document.getElementById('seoPixelCodeDisplay').textContent = pixelCode;
+            document.getElementById('pixelCodeSection').style.display = 'block';
+        }
+
+        window.copySEOPixelCode = function() {
+            const websiteId = document.getElementById('pixelWebsiteSelect').value;
+            
+            if (!websiteId) {
+                window.showNotification('Veuillez d\'abord sélectionner un site', 'error');
+                return;
+            }
+
+            const code = document.getElementById('seoPixelCodeDisplay').textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                window.showNotification('✅ Code SEO Pixel copié !', 'success');
+            }).catch(() => {
+                window.showNotification('❌ Erreur lors de la copie', 'error');
+            });
+        }
+
+        window.loadSEORules = async function() {
+            const websiteFilter = document.getElementById('ruleWebsiteFilter').value;
+            
+            try {
+                let url = `${API_URL}/api/seo-rules`;
+                if (websiteFilter) {
+                    url += `?websiteId=${websiteFilter}`;
+                }
+
+                const response = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.rules) {
+                    displaySEORules(data.rules);
+                } else {
+                    document.getElementById('seoRulesList').innerHTML = 
+                        '<p class="text-gray-500 text-center py-8">Aucune règle SEO trouvée</p>';
+                }
+            } catch (error) {
+                console.error('Load SEO rules error:', error);
+                window.showNotification('Erreur lors du chargement des règles', 'error');
+            }
+        }
+
+        function displaySEORules(rules) {
+            if (rules.length === 0) {
+                document.getElementById('seoRulesList').innerHTML = 
+                    '<p class="text-gray-500 text-center py-8">Aucune règle SEO pour le moment</p>';
+                return;
+            }
+
+            const rulesHtml = rules.map(rule => {
+                const statusColors = {
+                    active: 'bg-green-100 text-green-800',
+                    inactive: 'bg-gray-100 text-gray-800',
+                    draft: 'bg-yellow-100 text-yellow-800',
+                    testing: 'bg-blue-100 text-blue-800'
+                };
+
+                const statusColor = statusColors[rule.status] || 'bg-gray-100 text-gray-800';
+
+                return `
+                    <div class="border-b border-gray-200 p-4 hover:bg-gray-50">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <h4 class="font-bold text-gray-900">${escapeHtml(rule.name)}</h4>
+                                    <span class="px-2 py-1 rounded-full text-xs font-semibold ${statusColor}">
+                                        ${rule.status}
+                                    </span>
+                                    <span class="text-xs text-gray-500">
+                                        Priorité: ${rule.priority}
+                                    </span>
+                                </div>
+                                ${rule.description ? `<p class="text-sm text-gray-600 mb-2">${escapeHtml(rule.description)}</p>` : ''}
+                                <div class="flex items-center gap-4 text-xs text-gray-500">
+                                    <span>🎯 ${rule.targeting.matchType}: ${escapeHtml(rule.targeting.urlPattern)}</span>
+                                    <span>📊 ${rule.stats?.impressions || 0} impressions</span>
+                                    ${rule.abTesting?.enabled ? '<span>🧪 A/B Testing actif</span>' : ''}
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="window.toggleRuleStatus('${rule._id}', '${rule.status}')" 
+                                        class="px-3 py-1 text-sm rounded-lg ${rule.status === 'active' ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-green-100 text-green-700 hover:bg-green-200'}">
+                                    ${rule.status === 'active' ? '⏸️ Désactiver' : '▶️ Activer'}
+                                </button>
+                                <button onclick="window.editSEORule('${rule._id}')" 
+                                        class="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200">
+                                    ✏️ Modifier
+                                </button>
+                                <button onclick="window.deleteSEORule('${rule._id}')" 
+                                        class="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('seoRulesList').innerHTML = rulesHtml;
+        }
+
+        window.toggleRuleStatus = async function(ruleId, currentStatus) {
+            const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/seo-rules/${ruleId}/status`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.showNotification(`Règle ${newStatus === 'active' ? 'activée' : 'désactivée'}`, 'success');
+                    loadSEORules();
+                } else {
+                    window.showNotification(data.error || 'Erreur', 'error');
+                }
+            } catch (error) {
+                console.error('Toggle rule status error:', error);
+                window.showNotification('Erreur lors de la modification', 'error');
+            }
+        }
+
+        window.deleteSEORule = async function(ruleId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette règle ?')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/api/seo-rules/${ruleId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.showNotification('Règle supprimée', 'success');
+                    loadSEORules();
+                } else {
+                    window.showNotification(data.error || 'Erreur', 'error');
+                }
+            } catch (error) {
+                console.error('Delete rule error:', error);
+                window.showNotification('Erreur lors de la suppression', 'error');
+            }
+        }
+
+        window.showCreateRuleModal = function() {
+            // TODO: Modal pour créer des règles complètes
+            window.showNotification('Utilisez les exemples ci-dessous pour créer vos premières règles !', 'info');
+        }
+
+        window.editSEORule = function(ruleId) {
+            // TODO: Modal d'édition de règle
+            window.showNotification('Fonctionnalité en cours de développement', 'info');
+        }
+
+        window.createExampleRule = async function(type) {
+            const websiteId = document.getElementById('pixelWebsiteSelect').value;
+            
+            if (!websiteId) {
+                window.showNotification('Veuillez d\'abord sélectionner un site', 'error');
+                return;
+            }
+
+            const examples = {
+                homepage: {
+                    name: 'Homepage - SEO Optimized',
+                    description: 'Optimise le title et la meta description de la page d\'accueil',
+                    targeting: {
+                        matchType: 'exact',
+                        urlPattern: '/'
+                    },
+                    modifications: {
+                        title: {
+                            enabled: true,
+                            action: 'replace',
+                            value: '🏆 Bienvenue sur Notre Site - N°1 en France',
+                            maxLength: 60
+                        },
+                        metaDescription: {
+                            enabled: true,
+                            action: 'replace',
+                            value: 'Découvrez nos produits et services exceptionnels. ✓ Livraison gratuite ✓ Service client 7j/7',
+                            maxLength: 160
+                        }
+                    },
+                    status: 'active',
+                    priority: 100
+                },
+                products: {
+                    name: 'E-commerce - Pages Produits',
+                    description: 'Optimise toutes les pages produits avec structured data',
+                    targeting: {
+                        matchType: 'starts_with',
+                        urlPattern: '/products/'
+                    },
+                    modifications: {
+                        title: {
+                            enabled: true,
+                            action: 'template',
+                            template: '{original} | Achat en ligne - Livraison 24h'
+                        },
+                        openGraph: {
+                            enabled: true,
+                            tags: [
+                                { property: 'og:type', content: 'product' }
+                            ]
+                        }
+                    },
+                    status: 'active',
+                    priority: 80
+                },
+                blog: {
+                    name: 'Blog - Articles SEO',
+                    description: 'Ajoute Schema.org Article aux posts de blog',
+                    targeting: {
+                        matchType: 'starts_with',
+                        urlPattern: '/blog/'
+                    },
+                    modifications: {
+                        title: {
+                            enabled: true,
+                            action: 'append',
+                            value: ' | Blog Expert'
+                        },
+                        structuredData: {
+                            enabled: true,
+                            schemas: [{
+                                type: 'Article',
+                                data: {
+                                    "@context": "https://schema.org",
+                                    "@type": "BlogPosting"
+                                }
+                            }]
+                        }
+                    },
+                    status: 'active',
+                    priority: 70
+                }
+            };
+
+            const ruleData = examples[type];
+            if (!ruleData) return;
+
+            try {
+                window.showLoading('Création de la règle...');
+
+                const response = await fetch(`${API_URL}/api/seo-rules`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ...ruleData,
+                        websiteId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.showNotification('✅ Règle créée avec succès !', 'success');
+                    loadSEORules();
+                } else {
+                    window.showNotification(data.error || 'Erreur', 'error');
+                }
+            } catch (error) {
+                console.error('Create example rule error:', error);
+                window.showNotification('Erreur lors de la création', 'error');
+            } finally {
+                window.hideLoading();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // 🚀 INITIALIZATION
+        // ═══════════════════════════════════════════════════════════════════
+
+        // Check if user is already logged in
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            if (token && user) {
+                currentToken = token;
+                currentUser = JSON.parse(user);
+                showDashboard();
+            }
+        });
+
+        // Handle Enter key in login forms
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                if (!document.getElementById('loginForm').classList.contains('hidden')) {
+                    login();
+                } else if (!document.getElementById('registerForm').classList.contains('hidden')) {
+                    register();
+                }
+            }
+        });
+
+        console.log('🚀 SEO Platform initialized - Ready to go!');
+    </script>
 </body>
 </html>
