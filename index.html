@@ -288,6 +288,11 @@
                             data-tab="installation">
                         ⚙️ Installation
                     </button>
+                    <button onclick="window.switchTab('seo-analysis')" 
+                            class="py-4 px-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium text-gray-500 hover:text-gray-700 tab-button"
+                            data-tab="seo-analysis">
+                        🔍 SEO Analysis
+                    </button>
                 </nav>
             </div>
         </div>
@@ -775,6 +780,162 @@
                 </div>
             </div>
 
+            <!-- ═══════════════════════════════════════════════════════════════════ -->
+            <!-- 🔍 SEO ANALYSIS TAB -->
+            <!-- ═══════════════════════════════════════════════════════════════════ -->
+            <div id="tab-seo-analysis" class="tab-content hidden">
+                <div class="mb-8 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900">🔍 SEO Analysis</h2>
+                        <p class="text-gray-600 mt-2">Analysez et optimisez votre référencement avec l'IA</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <select id="seoWebsiteFilter" onchange="window.loadSEOAnalyses()" 
+                                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Tous les sites</option>
+                        </select>
+                        <button onclick="window.runSEOAnalysis()" 
+                                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors">
+                            🔍 Analyser une page
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Zone de contenu SEO -->
+                <div id="seoContent">
+                    <div class="text-center py-12">
+                        <div class="spinner mx-auto"></div>
+                        <p class="text-gray-600 mt-4">Chargement des analyses...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- 🎭 SEO ANALYSIS MODALS -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- Modal: Nouvelle Analyse SEO -->
+    <div id="seoAnalysisModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="modal-overlay fixed inset-0" onclick="window.closeSEOAnalysisModal()"></div>
+            <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-8 relative z-10 animate-fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">🔍 Nouvelle Analyse SEO</h3>
+                    <button onclick="window.closeSEOAnalysisModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Site Web</label>
+                        <select id="seoAnalysisWebsite" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Sélectionner un site</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">URL de la page</label>
+                        <input type="url" id="seoAnalysisUrl" placeholder="https://monsite.com/page" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p class="text-sm text-blue-800">
+                            <strong>📌 Comment ça marche :</strong><br>
+                            1. Le pixel SEO sur votre site collectera automatiquement les données<br>
+                            2. L'analyse calculera un score SEO sur 100<br>
+                            3. L'IA génèrera des recommandations personnalisées
+                        </p>
+                    </div>
+
+                    <div class="flex gap-3 justify-end mt-6">
+                        <button onclick="window.closeSEOAnalysisModal()" 
+                                class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                            Annuler
+                        </button>
+                        <button onclick="window.submitSEOAnalysis()" 
+                                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Lancer l'analyse
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Détails d'une Analyse -->
+    <div id="seoDetailsModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="modal-overlay fixed inset-0" onclick="window.closeSEODetailsModal()"></div>
+            <div class="bg-white rounded-xl shadow-2xl max-w-6xl w-full p-8 max-h-screen overflow-y-auto relative z-10 animate-fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">📊 Détails de l'Analyse SEO</h3>
+                    <button onclick="window.closeSEODetailsModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="seoDetailsContent">
+                    <!-- Contenu chargé dynamiquement -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Appliquer une Recommandation -->
+    <div id="applyRecommendationModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="modal-overlay fixed inset-0" onclick="window.closeApplyRecommendationModal()"></div>
+            <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-8 relative z-10 animate-fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">✨ Appliquer la Recommandation</h3>
+                    <button onclick="window.closeApplyRecommendationModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <div id="recommendationPreview" class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <!-- Recommendation details -->
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                        <input type="text" id="applyTitle" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Meta Description</label>
+                        <textarea id="applyDescription" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">H1</label>
+                        <input type="text" id="applyH1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="flex gap-3 justify-end mt-6">
+                        <button onclick="window.closeApplyRecommendationModal()" 
+                                class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                            Annuler
+                        </button>
+                        <button onclick="window.submitApplyRecommendation()" 
+                                class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                            Créer la règle SEO
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -3132,6 +3293,420 @@ ${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js"${scriptClose}`;
                 }
             }
         });
+
+        // ═══════════════════════════════════════════════════════════════════
+        // 📊 SEO ANALYSIS FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════
+
+        let currentSEOAnalyses = [];
+        let currentAnalysisId = null;
+        let currentRecommendationIndex = null;
+
+        // Load SEO Analyses
+        window.loadSEOAnalyses = async function() {
+            const websiteId = document.getElementById('seoWebsiteFilter')?.value || '';
+            
+            try {
+                showLoading('Chargement des analyses SEO...');
+                
+                let url = `${API_URL}/api/seo/analyses?limit=20`;
+                if (websiteId) url += `&websiteId=${websiteId}`;
+                
+                const response = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                
+                hideLoading();
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                currentSEOAnalyses = data.analyses || [];
+                
+                renderSEODashboard(currentSEOAnalyses, data.summary);
+                
+            } catch (error) {
+                hideLoading();
+                console.error('❌ Load SEO analyses error:', error);
+                document.getElementById('seoContent').innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
+                        <p class="text-red-800">Erreur de chargement des analyses SEO</p>
+                        <p class="text-red-600 text-sm mt-2">${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Render SEO Dashboard
+        function renderSEODashboard(analyses, summary) {
+            const content = document.getElementById('seoContent');
+            
+            if (analyses.length === 0) {
+                content.innerHTML = `
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-12 text-center">
+                        <svg class="w-24 h-24 mx-auto mb-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Aucune analyse SEO</h3>
+                        <p class="text-gray-600 mb-6">Lancez votre première analyse pour obtenir des recommandations personnalisées.</p>
+                        <button onclick="runSEOAnalysis()" class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-lg">
+                            🔍 Analyser une page
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const avgScore = summary?.avgScore || 0;
+            const criticalIssues = summary?.criticalIssues || 0;
+            const warnings = summary?.warnings || 0;
+            
+            const statsHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white stats-card">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-blue-100 text-sm font-medium">Score Moyen</p>
+                            <svg class="w-8 h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-5xl font-bold mb-1">${avgScore}<span class="text-2xl">/100</span></p>
+                        <p class="text-blue-100 text-xs">${analyses.length} page(s) analysée(s)</p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-lg p-6 text-white stats-card">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-red-100 text-sm font-medium">Problèmes Critiques</p>
+                            <svg class="w-8 h-8 text-red-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-5xl font-bold mb-1">${criticalIssues}</p>
+                        <p class="text-red-100 text-xs">À corriger en priorité</p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 text-white stats-card">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-orange-100 text-sm font-medium">Avertissements</p>
+                            <svg class="w-8 h-8 text-orange-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-5xl font-bold mb-1">${warnings}</p>
+                        <p class="text-orange-100 text-xs">Améliorations possibles</p>
+                    </div>
+                </div>
+            `;
+            
+            const analysesHTML = `
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <h3 class="text-lg font-bold text-gray-900">📋 Analyses Récentes</h3>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        ${analyses.map(analysis => renderAnalysisCard(analysis)).join('')}
+                    </div>
+                </div>
+            `;
+            
+            content.innerHTML = statsHTML + analysesHTML;
+            populateSEOWebsiteFilter();
+        }
+
+        // Render Analysis Card
+        function renderAnalysisCard(analysis) {
+            const score = analysis.score.overall;
+            const scoreColor = score >= 80 ? 'green' : score >= 60 ? 'yellow' : score >= 40 ? 'orange' : 'red';
+            const scoreGradient = {
+                green: 'from-green-500 to-green-600',
+                yellow: 'from-yellow-500 to-yellow-600',
+                orange: 'from-orange-500 to-orange-600',
+                red: 'from-red-500 to-red-600'
+            }[scoreColor];
+            
+            const criticalCount = analysis.issues.filter(i => i.severity === 'critical').length;
+            const warningCount = analysis.issues.filter(i => i.severity === 'warning').length;
+            
+            const date = new Date(analysis.timestamp);
+            const timeAgo = getTimeAgo(date);
+            
+            return `
+                <div class="p-6 hover:bg-gray-50 transition-colors cursor-pointer" onclick="viewSEODetails('${analysis._id}')">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h4 class="text-lg font-bold text-gray-900">${analysis.websiteId?.name || 'Site'}</h4>
+                                <span class="text-xs text-gray-500">${timeAgo}</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-3">${analysis.url}</p>
+                            
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                ${renderScoreBadge('Meta', analysis.score.meta)}
+                                ${renderScoreBadge('Contenu', analysis.score.content)}
+                                ${renderScoreBadge('Structure', analysis.score.structure)}
+                                ${renderScoreBadge('Perf', analysis.score.performance)}
+                                ${renderScoreBadge('Mobile', analysis.score.mobile)}
+                            </div>
+                            
+                            <div class="flex gap-4">
+                                ${criticalCount > 0 ? `
+                                    <span class="text-xs px-2 py-1 bg-red-100 text-red-800 rounded-full font-medium">
+                                        ${criticalCount} critique${criticalCount > 1 ? 's' : ''}
+                                    </span>
+                                ` : ''}
+                                ${warningCount > 0 ? `
+                                    <span class="text-xs px-2 py-1 bg-orange-100 text-orange-800 rounded-full font-medium">
+                                        ${warningCount} warning${warningCount > 1 ? 's' : ''}
+                                    </span>
+                                ` : ''}
+                                ${analysis.recommendations?.length > 0 ? `
+                                    <span class="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full font-medium">
+                                        ${analysis.recommendations.length} recommandation${analysis.recommendations.length > 1 ? 's' : ''}
+                                    </span>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col items-center ml-6">
+                            <div class="w-24 h-24 rounded-full bg-gradient-to-br ${scoreGradient} flex items-center justify-center shadow-lg">
+                                <div class="text-center">
+                                    <p class="text-3xl font-bold text-white">${score}</p>
+                                    <p class="text-xs text-white opacity-90">/ 100</p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-2 font-medium">Score SEO</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderScoreBadge(label, score) {
+            const color = score >= 80 ? 'green' : score >= 60 ? 'blue' : score >= 40 ? 'orange' : 'red';
+            const bgColor = {
+                green: 'bg-green-100 text-green-800',
+                blue: 'bg-blue-100 text-blue-800',
+                orange: 'bg-orange-100 text-orange-800',
+                red: 'bg-red-100 text-red-800'
+            }[color];
+            
+            return `<span class="text-xs px-2 py-1 ${bgColor} rounded font-medium">${label}: ${score}/100</span>`;
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            const intervals = {
+                année: 31536000,
+                mois: 2592000,
+                semaine: 604800,
+                jour: 86400,
+                heure: 3600,
+                minute: 60
+            };
+            
+            for (const [name, value] of Object.entries(intervals)) {
+                const interval = Math.floor(seconds / value);
+                if (interval >= 1) {
+                    return `Il y a ${interval} ${name}${interval > 1 ? 's' : ''}`;
+                }
+            }
+            return 'À l\'instant';
+        }
+
+        function populateSEOWebsiteFilter() {
+            const select = document.getElementById('seoWebsiteFilter');
+            if (!select || !allWebsites) return;
+            
+            select.innerHTML = '<option value="">Tous les sites</option>';
+            allWebsites.forEach(site => {
+                const option = document.createElement('option');
+                option.value = site._id;
+                option.textContent = site.name;
+                select.appendChild(option);
+            });
+        }
+
+        // Modal Functions
+        window.runSEOAnalysis = function() {
+            document.getElementById('seoAnalysisModal').classList.remove('hidden');
+            populateSEOAnalysisWebsites();
+        }
+
+        window.closeSEOAnalysisModal = function() {
+            document.getElementById('seoAnalysisModal').classList.add('hidden');
+        }
+
+        window.closeSEODetailsModal = function() {
+            document.getElementById('seoDetailsModal').classList.add('hidden');
+        }
+
+        window.closeApplyRecommendationModal = function() {
+            document.getElementById('applyRecommendationModal').classList.add('hidden');
+        }
+
+        function populateSEOAnalysisWebsites() {
+            const select = document.getElementById('seoAnalysisWebsite');
+            if (!select || !allWebsites) return;
+            
+            select.innerHTML = '<option value="">Sélectionner un site</option>';
+            allWebsites.forEach(site => {
+                const option = document.createElement('option');
+                option.value = site._id;
+                option.textContent = site.name;
+                select.appendChild(option);
+            });
+        }
+
+        window.submitSEOAnalysis = async function() {
+            const websiteId = document.getElementById('seoAnalysisWebsite').value;
+            const url = document.getElementById('seoAnalysisUrl').value;
+            
+            if (!websiteId || !url) {
+                showNotification('Veuillez remplir tous les champs', 'error');
+                return;
+            }
+            
+            showNotification('Analyse SEO lancée. Le pixel collectera les données automatiquement.', 'success');
+            closeSEOAnalysisModal();
+            
+            setTimeout(() => {
+                loadSEOAnalyses();
+            }, 5000);
+        }
+
+        window.viewSEODetails = async function(analysisId) {
+            try {
+                showLoading('Chargement des détails...');
+                
+                const response = await fetch(`${API_URL}/api/seo/analyses/${analysisId}`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                
+                hideLoading();
+                
+                if (!response.ok) throw new Error('Failed to load analysis');
+                
+                const data = await response.json();
+                const analysis = data.analysis;
+                
+                renderSEODetailsModal(analysis);
+                document.getElementById('seoDetailsModal').classList.remove('hidden');
+                
+            } catch (error) {
+                hideLoading();
+                console.error('View SEO details error:', error);
+                showNotification('Erreur lors du chargement des détails', 'error');
+            }
+        }
+
+        function renderSEODetailsModal(analysis) {
+            const content = document.getElementById('seoDetailsContent');
+            content.innerHTML = `
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="font-bold text-lg mb-4">📊 Scores Détaillés</h4>
+                        <div class="grid grid-cols-5 gap-4">
+                            ${renderDetailScore('Meta', analysis.score.meta, 'blue')}
+                            ${renderDetailScore('Contenu', analysis.score.content, 'green')}
+                            ${renderDetailScore('Structure', analysis.score.structure, 'purple')}
+                            ${renderDetailScore('Performance', analysis.score.performance, 'orange')}
+                            ${renderDetailScore('Mobile', analysis.score.mobile, 'pink')}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-bold text-lg mb-4">⚠️ Problèmes Détectés (${analysis.issues.length})</h4>
+                        <div class="space-y-2 max-h-64 overflow-y-auto">
+                            ${analysis.issues.map(issue => `
+                                <div class="border-l-4 ${issue.severity === 'critical' ? 'border-red-500 bg-red-50' : issue.severity === 'warning' ? 'border-orange-500 bg-orange-50' : 'border-blue-500 bg-blue-50'} pl-4 py-3 rounded">
+                                    <div class="font-semibold text-gray-900">${issue.message}</div>
+                                    <div class="text-sm text-gray-600 mt-1"><strong>Fix:</strong> ${issue.fix}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-bold text-lg mb-4">🤖 Recommandations IA (${analysis.recommendations.length})</h4>
+                        <div class="space-y-3 max-h-96 overflow-y-auto">
+                            ${analysis.recommendations.map((rec, idx) => `
+                                <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div class="font-bold text-gray-900">${rec.title}</div>
+                                        <span class="text-xs px-2 py-1 rounded font-medium ${rec.priority === 'high' ? 'bg-red-100 text-red-800' : rec.priority === 'medium' ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'}">
+                                            ${rec.priority.toUpperCase()}
+                                        </span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-3">${rec.description}</p>
+                                    <button onclick="applyRecommendation('${analysis._id}', ${idx})" 
+                                            class="text-sm px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+                                        ✨ Appliquer cette règle
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDetailScore(label, score, color) {
+            return `
+                <div class="text-center p-4 bg-${color}-50 rounded-lg">
+                    <div class="text-3xl font-bold text-${color}-600 mb-1">${score}</div>
+                    <div class="text-xs text-gray-600">${label}</div>
+                </div>
+            `;
+        }
+
+        window.applyRecommendation = function(analysisId, recommendationIndex) {
+            currentAnalysisId = analysisId;
+            currentRecommendationIndex = recommendationIndex;
+            
+            document.getElementById('applyRecommendationModal').classList.remove('hidden');
+        }
+
+        window.submitApplyRecommendation = async function() {
+            if (!currentAnalysisId || currentRecommendationIndex === null) return;
+            
+            const modifications = {
+                title: document.getElementById('applyTitle').value,
+                metaDescription: document.getElementById('applyDescription').value,
+                h1: document.getElementById('applyH1').value
+            };
+            
+            try {
+                showLoading('Création de la règle SEO...');
+                
+                const response = await fetch(`${API_URL}/api/seo/apply-optimization`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        analysisId: currentAnalysisId,
+                        recommendationIndex: currentRecommendationIndex,
+                        modifications
+                    })
+                });
+                
+                hideLoading();
+                
+                if (!response.ok) throw new Error('Failed to apply optimization');
+                
+                showNotification('Règle SEO créée avec succès !', 'success');
+                closeApplyRecommendationModal();
+                closeSEODetailsModal();
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Apply recommendation error:', error);
+                showNotification('Erreur lors de la création de la règle', 'error');
+            }
+        }
 
         console.log('🚀 SEO Platform initialized - Ready to go!');
     </script>
