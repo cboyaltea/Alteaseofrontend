@@ -1412,6 +1412,597 @@
     <!-- 🎬 JAVASCRIPT -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <script>
+// ═══════════════════════════════════════════════════════════════════
+// 🔍 AUTO SEO ANALYSIS - Code injecté automatiquement
+// ═══════════════════════════════════════════════════════════════════
+// Date: 2025-11-04
+
+window.createWebsite = async function() {
+  const name = document.getElementById('websiteName').value.trim();
+  const url = document.getElementById('websiteUrl').value.trim();
+  const language = document.getElementById('websiteLanguage')?.value || 'fr';
+  
+  // Validation
+  if (!name || !url) {
+    showNotification('⚠️ Nom et URL requis', 'error');
+    return;
+  }
+  
+  // Valider format URL
+  if (!isValidUrl(url)) {
+    showNotification('⚠️ Format d\'URL invalide. Exemple: https://monsite.com', 'error');
+    return;
+  }
+  
+  try {
+    showLoading('🌐 Création du site et analyse SEO en cours...');
+    
+    const response = await fetch(`${API_URL}/api/websites`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${currentToken}`
+      },
+      body: JSON.stringify({ name, url, language })
+    });
+    
+    hideLoading();
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Erreur lors de la création du site');
+    }
+    
+    const data = await response.json();
+    
+    closeCreateWebsiteModal();
+    
+    // ────────────────────────────────────────────────────────────
+    // AFFICHER LE RÉSULTAT DE L'ANALYSE AUTOMATIQUE
+    // ────────────────────────────────────────────────────────────
+    
+    if (data.analysis) {
+      showAutoAnalysisResult(data.website, data.analysis);
+    } else {
+      showNotification('✅ Site créé avec succès!', 'success');
+      loadWebsites(); // Recharger la liste des sites
+    }
+    
+  } catch (error) {
+    hideLoading();
+    console.error('❌ Create website error:', error);
+    showNotification(`❌ ${error.message}`, 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// 🎭 MODAL: Résultat de l'analyse automatique
+// ═══════════════════════════════════════════════════════════════════
+
+function showAutoAnalysisResult(website, analysis) {
+  const modal = document.createElement('div');
+  modal.id = 'autoAnalysisResultModal';
+  modal.className = 'fixed inset-0 z-50 overflow-y-auto';
+  
+  modal.innerHTML = `
+    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onclick="closeAutoAnalysisModal()"></div>
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-8 animate-slideIn">
+        
+        <!-- ──────────────────────────────────────────────────── -->
+        <!-- HEADER -->
+        <!-- ──────────────────────────────────────────────────── -->
+        
+        <div class="flex justify-between items-start mb-6">
+          <div>
+            <div class="flex items-center mb-2">
+              <span class="text-4xl mr-3">🎉</span>
+              <h2 class="text-3xl font-bold text-gray-900">
+                Site créé avec succès!
+              </h2>
+            </div>
+            <div class="flex items-center text-gray-600 mt-2">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+              </svg>
+              <span class="font-semibold">${website.name}</span>
+              <span class="mx-2">•</span>
+              <a href="${website.url}" target="_blank" class="text-blue-600 hover:underline">
+                ${website.url}
+              </a>
+            </div>
+          </div>
+          <button onclick="closeAutoAnalysisModal()" 
+                  class="text-gray-400 hover:text-gray-600 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <!-- ──────────────────────────────────────────────────── -->
+        <!-- SCORE SEO PRINCIPAL -->
+        <!-- ──────────────────────────────────────────────────── -->
+        
+        <div class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-xl p-6 mb-6 border border-blue-100">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <div class="flex items-center mb-2">
+                <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <h3 class="text-xl font-semibold text-gray-900">
+                  Analyse SEO initiale terminée
+                </h3>
+              </div>
+              <p class="text-gray-600">
+                Votre site a été automatiquement analysé et des améliorations vous sont proposées
+              </p>
+            </div>
+            <div class="text-center ml-6">
+              <div class="relative">
+                <svg class="w-32 h-32 transform -rotate-90">
+                  <circle cx="64" cy="64" r="52" stroke="#e5e7eb" stroke-width="8" fill="none"/>
+                  <circle cx="64" cy="64" r="52" 
+                          stroke="${getScoreStrokeColor(analysis.score.overall)}" 
+                          stroke-width="8" 
+                          fill="none"
+                          stroke-dasharray="${(analysis.score.overall / 100) * 326.7} 326.7"
+                          stroke-linecap="round"/>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <div class="text-5xl font-bold ${getScoreColor(analysis.score.overall)}">
+                    ${analysis.score.overall}
+                  </div>
+                  <div class="text-sm text-gray-600 font-medium">/ 100</div>
+                </div>
+              </div>
+              <div class="text-sm font-medium mt-2 ${getScoreColor(analysis.score.overall)}">
+                ${getScoreLabel(analysis.score.overall)}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ──────────────────────────────────────────────────── -->
+        <!-- SCORES DÉTAILLÉS -->
+        <!-- ──────────────────────────────────────────────────── -->
+        
+        <div class="mb-6">
+          <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
+            Scores détaillés
+          </h4>
+          <div class="grid grid-cols-5 gap-3">
+            ${renderScoreCard('Meta', analysis.score.meta, 'blue', 'M')}
+            ${renderScoreCard('Contenu', analysis.score.content, 'green', 'C')}
+            ${renderScoreCard('Structure', analysis.score.structure, 'purple', 'S')}
+            ${renderScoreCard('Performance', analysis.score.performance, 'orange', 'P')}
+            ${renderScoreCard('Mobile', analysis.score.mobile, 'pink', 'M')}
+          </div>
+        </div>
+        
+        <!-- ──────────────────────────────────────────────────── -->
+        <!-- PROBLÈMES DÉTECTÉS -->
+        <!-- ──────────────────────────────────────────────────── -->
+        
+        <div class="bg-amber-50 border-l-4 border-amber-400 rounded-lg p-4 mb-6">
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <svg class="w-6 h-6 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"></path>
+              </svg>
+            </div>
+            <div class="ml-3 flex-1">
+              <h4 class="font-bold text-gray-900 mb-1">
+                ${analysis.issuesCount} problème(s) détecté(s) sur votre site
+              </h4>
+              <p class="text-sm text-gray-700">
+                Dont <strong>${analysis.criticalIssuesCount} critique(s)</strong> nécessitant une attention immédiate pour améliorer votre référencement
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ──────────────────────────────────────────────────── -->
+        <!-- RÈGLES CRÉÉES AUTOMATIQUEMENT -->
+        <!-- ──────────────────────────────────────────────────── -->
+        
+        ${analysis.rulesCreated > 0 ? `
+          <div class="bg-emerald-50 border-l-4 border-emerald-400 rounded-lg p-4 mb-6">
+            <div class="flex items-start">
+              <div class="flex-shrink-0">
+                <svg class="w-6 h-6 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path>
+                </svg>
+              </div>
+              <div class="ml-3 flex-1">
+                <h4 class="font-bold text-gray-900 mb-1">
+                  ${analysis.rulesCreated} règle(s) SEO créée(s) automatiquement ✨
+                </h4>
+                <p class="text-sm text-gray-700 mb-3">
+                  Des règles ont été générées pour corriger automatiquement les problèmes critiques. 
+                  Elles sont en mode <span class="font-semibold">DRAFT</span> - vous pouvez les activer manuellement ou toutes en une fois.
+                </p>
+                <div class="flex gap-2">
+                  <button onclick="viewAutoRules('${website._id}')" 
+                          class="px-4 py-2 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700 transition-colors font-medium">
+                    📋 Voir les règles
+                  </button>
+                  <button onclick="activateAllAutoRules('${website._id}')" 
+                          class="px-4 py-2 bg-emerald-100 text-emerald-800 text-sm rounded-lg hover:bg-emerald-200 transition-colors font-medium">
+                    ⚡ Activer tout
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ` : `
+          <div class="bg-blue-50 border-l-4 border-blue-400 rounded-lg p-4 mb-6">
+            <div class="flex items-start">
+              <div class="flex-shrink-0">
+                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"></path>
+                </svg>
+              </div>
+              <div class="ml-3 flex-1">
+                <h4 class="font-bold text-gray-900 mb-1">
+                  Aucune règle critique nécessaire
+                </h4>
+                <p class="text-sm text-gray-700">
+                  Votre site n'a pas de problèmes critiques nécessitant des corrections automatiques. Consultez les recommandations ci-dessous pour optimiser davantage votre SEO.
+                </p>
+              </div>
+            </div>
+          </div>
+        `}
+        
+        <!-- ──────────────────────────────────────────────────── -->
+        <!-- RECOMMANDATIONS IA -->
+        <!-- ──────────────────────────────────────────────────── -->
+        
+        ${analysis.recommendations && analysis.recommendations.length > 0 ? `
+          <div class="mb-6">
+            <div class="flex items-center mb-3">
+              <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+              <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                Recommandations IA (Top ${analysis.recommendations.length})
+              </h4>
+            </div>
+            <div class="space-y-2 max-h-64 overflow-y-auto pr-2" style="scrollbar-width: thin;">
+              ${analysis.recommendations.map((rec, idx) => `
+                <div class="border-l-4 ${getPriorityBorderColor(rec.priority)} bg-gray-50 rounded-r-lg p-3 hover:shadow-sm transition-shadow">
+                  <div class="flex justify-between items-start mb-1">
+                    <div class="flex items-start flex-1">
+                      <span class="text-xs font-bold text-gray-500 mr-2">${idx + 1}.</span>
+                      <div class="flex-1">
+                        <div class="font-semibold text-gray-900 text-sm">${rec.title}</div>
+                        <p class="text-xs text-gray-600 mt-1">${rec.description}</p>
+                        ${rec.implementation ? `
+                          <details class="mt-2">
+                            <summary class="text-xs text-blue-600 cursor-pointer hover:underline">
+                              Voir le code d'implémentation
+                            </summary>
+                            <pre class="mt-2 p-2 bg-gray-900 text-gray-100 text-xs rounded overflow-x-auto"><code>${escapeHtml(rec.implementation)}</code></pre>
+                          </details>
+                        ` : ''}
+                      </div>
+                    </div>
+                    <span class="text-xs px-2 py-1 rounded font-medium ml-2 whitespace-nowrap ${getPriorityBadgeClass(rec.priority)}">
+                      ${rec.priority.toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+        
+        <!-- ──────────────────────────────────────────────────── -->
+        <!-- ACTIONS FINALES -->
+        <!-- ──────────────────────────────────────────────────── -->
+        
+        <div class="flex justify-between items-center pt-6 border-t border-gray-200">
+          <button onclick="viewFullAnalysis('${analysis.analysisId}')" 
+                  class="px-6 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium flex items-center">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            Analyse complète
+          </button>
+          <div class="flex gap-3">
+            <button onclick="closeAutoAnalysisModal(); loadWebsites();" 
+                    class="px-6 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+              Fermer
+            </button>
+            ${analysis.rulesCreated > 0 ? `
+              <button onclick="activateAllAutoRules('${website._id}')" 
+                      class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-lg hover:shadow-xl flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                Activer toutes les règles
+              </button>
+            ` : ''}
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// 🎨 FONCTIONS HELPER POUR LE MODAL
+// ═══════════════════════════════════════════════════════════════════
+
+function getScoreColor(score) {
+  if (score >= 80) return 'text-green-600';
+  if (score >= 60) return 'text-yellow-600';
+  if (score >= 40) return 'text-orange-600';
+  return 'text-red-600';
+}
+
+function getScoreStrokeColor(score) {
+  if (score >= 80) return '#10b981'; // green
+  if (score >= 60) return '#eab308'; // yellow
+  if (score >= 40) return '#f97316'; // orange
+  return '#ef4444'; // red
+}
+
+function getScoreLabel(score) {
+  if (score >= 90) return 'Excellent';
+  if (score >= 80) return 'Très bon';
+  if (score >= 70) return 'Bon';
+  if (score >= 60) return 'Moyen';
+  if (score >= 50) return 'Faible';
+  return 'Critique';
+}
+
+function renderScoreCard(label, score, color, icon) {
+  const bgColor = `bg-${color}-50`;
+  const textColor = `text-${color}-600`;
+  const borderColor = `border-${color}-200`;
+  
+  return `
+    <div class="text-center p-4 ${bgColor} rounded-lg border ${borderColor} hover:shadow-md transition-shadow">
+      <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">${icon}</div>
+      <div class="text-3xl font-bold ${textColor} mb-1">${score}</div>
+      <div class="text-xs text-gray-600 font-medium">${label}</div>
+    </div>
+  `;
+}
+
+function getPriorityBorderColor(priority) {
+  if (priority === 'high') return 'border-red-500';
+  if (priority === 'medium') return 'border-orange-500';
+  return 'border-blue-500';
+}
+
+function getPriorityBadgeClass(priority) {
+  if (priority === 'high') return 'bg-red-100 text-red-800';
+  if (priority === 'medium') return 'bg-orange-100 text-orange-800';
+  return 'bg-blue-100 text-blue-800';
+}
+
+function escapeHtml(text) {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// 🔧 FONCTIONS D'ACTION
+// ═══════════════════════════════════════════════════════════════════
+
+window.closeAutoAnalysisModal = function() {
+  const modal = document.getElementById('autoAnalysisResultModal');
+  if (modal) {
+    modal.remove();
+  }
+}
+
+window.viewAutoRules = async function(websiteId) {
+  closeAutoAnalysisModal();
+  
+  showLoading('Chargement des règles...');
+  
+  try {
+    const response = await fetch(`${API_URL}/api/seo/rules?websiteId=${websiteId}&autoGenerated=true`, {
+      headers: { 'Authorization': `Bearer ${currentToken}` }
+    });
+    
+    hideLoading();
+    
+    if (!response.ok) throw new Error('Failed to load rules');
+    
+    const data = await response.json();
+    
+    // Passer à l'onglet règles
+    window.switchTab('seo-rules');
+    
+    // Mettre en évidence les règles auto-générées
+    if (data.rules && data.rules.length > 0) {
+      setTimeout(() => {
+        highlightAutoRules(data.rules);
+      }, 300);
+    }
+    
+  } catch (error) {
+    hideLoading();
+    console.error('❌ Error loading auto rules:', error);
+    showNotification('❌ Erreur lors du chargement des règles', 'error');
+  }
+}
+
+window.activateAllAutoRules = async function(websiteId) {
+  if (!confirm('✅ Activer toutes les règles générées automatiquement?\n\nCes règles corrigeront les problèmes critiques détectés sur votre site.')) {
+    return;
+  }
+  
+  showLoading('⚡ Activation des règles en cours...');
+  
+  try {
+    const response = await fetch(`${API_URL}/api/seo/rules/activate-auto`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${currentToken}`
+      },
+      body: JSON.stringify({ websiteId })
+    });
+    
+    hideLoading();
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to activate rules');
+    }
+    
+    const data = await response.json();
+    
+    showNotification(`✅ ${data.activatedCount} règle(s) activée(s) avec succès! Le pixel injectera les modifications automatiquement.`, 'success');
+    closeAutoAnalysisModal();
+    
+    // Recharger la liste des sites
+    if (typeof loadWebsites === 'function') {
+      loadWebsites();
+    }
+    
+  } catch (error) {
+    hideLoading();
+    console.error('❌ Error activating rules:', error);
+    showNotification(`❌ Erreur: ${error.message}`, 'error');
+  }
+}
+
+window.viewFullAnalysis = async function(analysisId) {
+  closeAutoAnalysisModal();
+  
+  showLoading('📊 Chargement de l\'analyse complète...');
+  
+  try {
+    const response = await fetch(`${API_URL}/api/seo/analyses/${analysisId}`, {
+      headers: { 'Authorization': `Bearer ${currentToken}` }
+    });
+    
+    hideLoading();
+    
+    if (!response.ok) throw new Error('Failed to load analysis');
+    
+    const data = await response.json();
+    
+    // Afficher le modal de détails (fonction existante)
+    if (typeof renderSEODetailsModal === 'function') {
+      renderSEODetailsModal(data.analysis);
+      document.getElementById('seoDetailsModal')?.classList.remove('hidden');
+    } else {
+      // Fallback: afficher dans console
+      console.log('Analyse complète:', data.analysis);
+      alert('Analyse chargée. Consultez la console pour les détails.');
+    }
+    
+  } catch (error) {
+    hideLoading();
+    console.error('❌ Error loading analysis:', error);
+    showNotification('❌ Erreur lors du chargement de l\'analyse', 'error');
+  }
+}
+
+function highlightAutoRules(rules) {
+  // Cette fonction met en évidence visuellement les règles auto-générées
+  // Implémentation dépend de votre interface de liste de règles
+  console.log('📋 Highlighting', rules.length, 'auto-generated rules');
+  
+  // Exemple: ajouter une classe CSS ou un badge
+  rules.forEach(rule => {
+    const element = document.querySelector(`[data-rule-id="${rule._id}"]`);
+    if (element) {
+      element.classList.add('auto-generated-rule', 'border-2', 'border-green-400');
+      
+      // Ajouter un badge "AUTO"
+      const badge = document.createElement('span');
+      badge.className = 'inline-block px-2 py-1 text-xs font-bold bg-green-100 text-green-800 rounded ml-2';
+      badge.textContent = '🤖 AUTO';
+      element.querySelector('.rule-name')?.appendChild(badge);
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// 🎨 STYLES CSS SUPPLÉMENTAIRES
+// ═══════════════════════════════════════════════════════════════════
+
+// Ajouter ces styles dans la section <style> du HTML
+
+/*
+<style>
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out;
+}
+
+.auto-generated-rule {
+  position: relative;
+  animation: highlight 1s ease-in-out;
+}
+
+@keyframes highlight {
+  0%, 100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: rgba(16, 185, 129, 0.1);
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+</style>
+*/
+
+console.log('✅ Frontend auto-analyze UI code loaded');
+
+
+// ═══════════════════════════════════════════════════════════════════
+// FIN AUTO SEO ANALYSIS
+// ═══════════════════════════════════════════════════════════════════
+
+
         // ═══════════════════════════════════════════════════════════════════
         console.log("🚀 ==== SCRIPT CHARGÉ ====");
         console.log("✅ window.login sera défini dans quelques lignes...");
