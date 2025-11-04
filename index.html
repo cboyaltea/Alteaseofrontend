@@ -2723,20 +2723,18 @@ ${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js"${scriptClose}`;
                     break;
                 case 'analytics':
                     loadWebsites().then(() => {
-                        // Populer le dropdown des sites
-                        const analyticsSelect = document.getElementById('analyticsWebsite');
-                        if (analyticsSelect && window.currentWebsites) {
-                            const currentValue = analyticsSelect.value;
-                            analyticsSelect.innerHTML = '<option value="">Tous les sites</option>' +
-                                window.currentWebsites.map(w => 
-                                    `<option value="${w._id}">${escapeHtml(w.name)}</option>`
-                                ).join('');
-                            if (currentValue) analyticsSelect.value = currentValue;
-                        }
-                        // Puis charger les analytics
-                        loadAnalytics();
-                    });
-                    break;
+        // Peupler le dropdown
+        const analyticsSelect = document.getElementById('analyticsWebsite');
+        if (analyticsSelect && window.currentWebsites && window.currentWebsites.length > 0) {
+            // ... peupler le dropdown ...
+        }
+        
+        // ✅ Attendre 100ms pour que le DOM se mette à jour
+        setTimeout(() => {
+            loadAnalytics();  // ← Maintenant appelé après le DOM
+        }, 100);
+    });
+    break;
                 case 'users':
                     loadUsers();
                     break;
