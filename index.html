@@ -1507,6 +1507,10 @@ window.createWebsite = async function() {
     
     const data = await response.json();
     
+    // Debug: Afficher ce que le backend retourne
+    console.log('📥 Backend response:', data);
+    console.log('📊 Analysis data:', data.analysis);
+    
     closeCreateWebsiteModal();
     
     // ────────────────────────────────────────────────────────────
@@ -1514,8 +1518,10 @@ window.createWebsite = async function() {
     // ────────────────────────────────────────────────────────────
     
     if (data.analysis) {
+      console.log('✅ Showing auto-analysis modal');
       showAutoAnalysisResult(data.website, data.analysis);
     } else {
+      console.log('⚠️ No analysis data, showing simple notification');
       showNotification('✅ Site créé avec succès!', 'success');
       loadWebsites(); // Recharger la liste des sites
     }
@@ -3184,7 +3190,7 @@ window.seoPixelConfig = {
 ${scriptClose}
 
 <!-- SEO Pixel Script -->
-${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js" defer${scriptClose}`;
+<script src="${API_URL.replace('/api', '')}/seo-pixel.js" defer><${"/"}script>`;
 
             document.getElementById('pixelCode').innerHTML = `<code>${escapeHtml(pixelCode)}</code>`;
         }
@@ -3312,7 +3318,7 @@ window.seoPixelConfig = {
 ${scriptClose}
 
 <!-- SEO Pixel Script -->
-${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js" defer${scriptClose}`;
+<script src="${API_URL.replace('/api', '')}/seo-pixel.js" defer><${"/"}script>`;
         }
 
         // ═══════════════════════════════════════════════════════════════════
@@ -3575,7 +3581,7 @@ window.seoPixelConfig = {
 ${scriptClose}
 
 <!-- SEO Pixel Script -->
-${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js" defer${scriptClose}`;
+<script src="${API_URL.replace('/api', '')}/seo-pixel.js" defer><${"/"}script>`;
 
             document.getElementById('seoPixelCodeDisplay').textContent = pixelCode;
             document.getElementById('pixelCodeSection').style.display = 'block';
