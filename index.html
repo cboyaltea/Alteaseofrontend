@@ -2208,7 +2208,13 @@
         // ═══════════════════════════════════════════════════════════════════
 
         window.loadAnalytics = async function() {
-            const websiteId = document.getElementById('analyticsWebsite')?.value || '';
+            const analyticsSelect = document.getElementById('analyticsWebsite');
+            const websiteId = analyticsSelect?.value || '';
+            
+            console.log('📊 [loadAnalytics] Starting...');
+            console.log('📊 [loadAnalytics] Dropdown element:', analyticsSelect);
+            console.log('📊 [loadAnalytics] Dropdown value:', websiteId);
+            console.log('📊 [loadAnalytics] Dropdown innerHTML length:', analyticsSelect?.innerHTML?.length || 0);
             
             try {
                 console.log('📊 Loading analytics for websiteId:', websiteId || 'ALL');
@@ -2216,6 +2222,8 @@
                 // Construire l'URL avec dates
                 const startDate = new Date(Date.now() - 30 * 24 * 3600000).toISOString().split('T')[0];
                 const endDate = new Date().toISOString().split('T')[0];
+                
+                console.log('📊 Date range:', startDate, '→', endDate);
                 
                 let allAnalytics = [];
                 
@@ -2229,6 +2237,8 @@
                     const websitesData = await websitesResponse.json();
                     const websites = websitesData.websites || [];
                     
+                    console.log('📊 Websites response:', websitesData);
+                    
                     if (websites.length === 0) {
                         document.getElementById('analyticsData').innerHTML = 
                             '<p class="text-gray-500 text-center py-8">Aucun site disponible. Créez un site d\'abord.</p>';
@@ -2238,6 +2248,34 @@
                     console.log(`📊 Found ${websites.length} site(s)`);
                     
                     // Charger les analytics pour chaque site
+                    for (const site of websites) {
+                        console.log(`📊 Loading analytics for site: ${site.name} (_id: ${site._id})`);
+                        
+                        const url = `${API_URL}/api/analytics?websiteId=${site._id}&startDate=${startDate}&endDate=${endDate}`;
+                        console.log(`📊 Fetching: ${url}`);
+                        
+                        const response = await fetch(url, {
+                            headers: { 'Authorization': `Bearer ${currentToken}` }
+                        });
+                        
+                        console.log(`📊 Response status for ${site.name}:`, response.status);
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            const analytics = Array.isArray(data) ? data : (data.analytics || []);
+                            
+                            // Ajouter le nom du site à chaque analytics
+                            analytics.forEach(a => {
+                                a.siteName = site.name;
+                                a.siteUrl = site.url;
+                            });
+                            
+                            allAnalytics = allAnalytics.concat(analytics);
+                            console.log(`✅ Loaded ${analytics.length} analytics for ${site.name}`);
+                        } else {
+                            console.error(`❌ Failed to load analytics for ${site.name}:`, response.status);
+                        }
+                    }
                     for (const site of websites) {
                         const url = `${API_URL}/api/analytics?websiteId=${site._id}&startDate=${startDate}&endDate=${endDate}`;
                         const response = await fetch(url, {
@@ -2722,19 +2760,36 @@ ${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js"${scriptClose}`;
                     loadContents();
                     break;
                 case 'analytics':
+                    console.log('🔄 Loading Analytics tab...');
                     loadWebsites().then(() => {
-        // Peupler le dropdown
-        const analyticsSelect = document.getElementById('analyticsWebsite');
-        if (analyticsSelect && window.currentWebsites && window.currentWebsites.length > 0) {
-            // ... peupler le dropdown ...
-        }
-        
-        // ✅ Attendre 100ms pour que le DOM se mette à jour
-        setTimeout(() => {
-            loadAnalytics();  // ← Maintenant appelé après le DOM
-        }, 100);
-    });
-    break;
+                        console.log('✅ Websites loaded:', window.currentWebsites?.length || 0);
+                        
+                        // Populer le dropdown des sites
+                        const analyticsSelect = document.getElementById('analyticsWebsite');
+                        if (analyticsSelect && window.currentWebsites && window.currentWebsites.length > 0) {
+                            const currentValue = analyticsSelect.value;
+                            analyticsSelect.innerHTML = '<option value="">Tous les sites</option>' +
+                                window.currentWebsites.map(w => 
+                                    `<option value="${w._id}">${escapeHtml(w.name)}</option>`
+                                ).join('');
+                            if (currentValue) analyticsSelect.value = currentValue;
+                            
+                            console.log('✅ Dropdown populated with', window.currentWebsites.length, 'sites');
+                        } else {
+                            console.warn('⚠️ No websites found or dropdown not available');
+                        }
+                        
+                        // Attendre un peu pour être sûr que le DOM est à jour
+                        setTimeout(() => {
+                            console.log('🚀 Now loading analytics...');
+                            loadAnalytics();
+                        }, 100);
+                    }).catch(err => {
+                        console.error('❌ Error loading websites:', err);
+                        document.getElementById('analyticsData').innerHTML = 
+                            '<p class="text-red-500 text-center py-8">Erreur de chargement des sites</p>';
+                    });
+                    break;
                 case 'users':
                     loadUsers();
                     break;
