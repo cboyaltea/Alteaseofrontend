@@ -1577,16 +1577,36 @@
             try {
                 const headers = { 'Authorization': `Bearer ${currentToken}` };
                 
-                const [websites, contents, analytics, users] = await Promise.all([
-                    fetch(`${API_URL}/api/websites`, { headers }).then(r => r.json()),
+                // Charger d'abord les sites pour obtenir le websiteId
+                const websitesResponse = await fetch(`${API_URL}/api/websites`, { headers });
+                const websites = await websitesResponse.json();
+                
+                const websitesList = websites.websites || [];
+                const firstWebsite = websitesList[0];
+                
+                // Charger analytics avec websiteId si disponible
+                let analyticsData = { data: [] };
+                if (firstWebsite) {
+                    const startDate = new Date(Date.now() - 30 * 24 * 3600000).toISOString().split('T')[0];
+                    const endDate = new Date().toISOString().split('T')[0];
+                    const analyticsUrl = `${API_URL}/api/analytics?websiteId=${firstWebsite._id}&startDate=${startDate}&endDate=${endDate}`;
+                    
+                    const analyticsResponse = await fetch(analyticsUrl, { headers });
+                    if (analyticsResponse.ok) {
+                        const analyticsArray = await analyticsResponse.json();
+                        analyticsData = { data: analyticsArray };
+                    }
+                }
+                
+                // Charger le reste
+                const [contents, users] = await Promise.all([
                     fetch(`${API_URL}/api/content`, { headers }).then(r => r.json()),
-                    fetch(`${API_URL}/api/analytics`, { headers }).then(r => r.json()),
                     fetch(`${API_URL}/api/users`, { headers }).then(r => r.json())
                 ]);
                 
-                document.getElementById('statsWebsites').textContent = websites.websites?.length || 0;
+                document.getElementById('statsWebsites').textContent = websitesList.length || 0;
                 document.getElementById('statsContents').textContent = contents.contents?.length || 0;
-                document.getElementById('statsAnalytics').textContent = analytics.data?.length || 0;
+                document.getElementById('statsAnalytics').textContent = analyticsData.data?.length || 0;
                 document.getElementById('statsUsers').textContent = users.users?.length || 0;
             } catch (error) {
                 console.error('Load stats error:', error);
@@ -2191,38 +2211,78 @@
             const websiteId = document.getElementById('analyticsWebsite')?.value || '';
             
             try {
-                let url = `${API_URL}/api/analytics`;
-                if (websiteId) url += `?website=${websiteId}`;
+                // Si pas de websiteId sélectionné, charger les sites d'abord
+                let selectedWebsiteId = websiteId;
+                
+                if (!selectedWebsiteId) {
+                    const websitesResponse = await fetch(`${API_URL}/api/websites`, {
+                        headers: { 'Authorization': `Bearer ${currentToken}` }
+                    });
+                    const websitesData = await websitesResponse.json();
+                    const websites = websitesData.websites || [];
+                    
+                    if (websites.length === 0) {
+                        document.getElementById('analyticsData').innerHTML = 
+                            '<p class="text-gray-500 text-center py-8">Aucun site disponible. Créez un site d\'abord.</p>';
+                        return;
+                    }
+                    
+                    selectedWebsiteId = websites[0]._id;
+                }
+                
+                // Construire l'URL avec websiteId et dates
+                const startDate = new Date(Date.now() - 30 * 24 * 3600000).toISOString().split('T')[0];
+                const endDate = new Date().toISOString().split('T')[0];
+                let url = `${API_URL}/api/analytics?websiteId=${selectedWebsiteId}&startDate=${startDate}&endDate=${endDate}`;
                 
                 const response = await fetch(url, {
                     headers: { 'Authorization': `Bearer ${currentToken}` }
                 });
                 
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
                 const data = await response.json();
                 
-                if (data.success && data.data) {
-                    const analyticsHTML = data.data.length > 0 ? data.data.map(item => `
+                // data est un tableau d'analytics
+                if (Array.isArray(data) && data.length > 0) {
+                    // Grouper par pageUrl
+                    const groupedData = {};
+                    data.forEach(item => {
+                        const url = item.pageUrl || '/';
+                        if (!groupedData[url]) {
+                            groupedData[url] = { pageviews: 0, totalTime: 0, count: 0 };
+                        }
+                        groupedData[url].pageviews++;
+                        groupedData[url].count++;
+                    });
+                    
+                    const analyticsHTML = Object.entries(groupedData).map(([url, stats]) => `
                         <div class="bg-white rounded-xl shadow-sm p-6">
-                            <h3 class="text-lg font-bold text-gray-900 mb-4">${item.url || 'Page'}</h3>
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">${url}</h3>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <p class="text-sm text-gray-600">Pages vues</p>
-                                    <p class="text-2xl font-bold text-gray-900">${item.pageviews || 0}</p>
+                                    <p class="text-2xl font-bold text-gray-900">${stats.pageviews}</p>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-600">Temps moyen</p>
-                                    <p class="text-2xl font-bold text-gray-900">${item.avgTime || 0}s</p>
+                                    <p class="text-sm text-gray-600">Visites</p>
+                                    <p class="text-2xl font-bold text-gray-900">${stats.count}</p>
                                 </div>
                             </div>
                         </div>
-                    `).join('') : '<p class="text-gray-500 text-center py-8">Aucune donnée d\'analyse disponible</p>';
+                    `).join('');
                     
                     document.getElementById('analyticsData').innerHTML = analyticsHTML;
+                } else {
+                    document.getElementById('analyticsData').innerHTML = 
+                        '<p class="text-gray-500 text-center py-8">Aucune donnée d\'analyse disponible. Le pixel n\'a pas encore enregistré de données.</p>';
                 }
             } catch (error) {
                 console.error('Load analytics error:', error);
                 document.getElementById('analyticsData').innerHTML = 
-                    '<p class="text-gray-500 text-center py-8">Erreur de chargement</p>';
+                    `<p class="text-red-500 text-center py-8">Erreur de chargement: ${error.message}</p>`;
             }
         }
 
