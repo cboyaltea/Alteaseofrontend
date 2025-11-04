@@ -2593,7 +2593,7 @@ window.seoPixelConfig = {
 ${scriptClose}
 
 <!-- SEO Pixel Script -->
-${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js"${scriptClose}`;
+${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js" defer${scriptClose}`;
 
             document.getElementById('pixelCode').innerHTML = `<code>${escapeHtml(pixelCode)}</code>`;
         }
@@ -2721,7 +2721,7 @@ window.seoPixelConfig = {
 ${scriptClose}
 
 <!-- SEO Pixel Script -->
-${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js"${scriptClose}`;
+${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js" defer${scriptClose}`;
         }
 
         // ═══════════════════════════════════════════════════════════════════
@@ -2984,7 +2984,7 @@ window.seoPixelConfig = {
 ${scriptClose}
 
 <!-- SEO Pixel Script -->
-${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js"${scriptClose}`;
+${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js" defer${scriptClose}`;
 
             document.getElementById('seoPixelCodeDisplay').textContent = pixelCode;
             document.getElementById('pixelCodeSection').style.display = 'block';
