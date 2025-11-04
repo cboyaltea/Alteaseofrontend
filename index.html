@@ -2346,19 +2346,36 @@ console.log('✅ Frontend auto-analyze UI code loaded');
             });
         }
 
+        // Helper function pour valider les URLs
+        function isValidUrl(string) {
+            try {
+                const url = new URL(string);
+                return url.protocol === 'http:' || url.protocol === 'https:';
+            } catch (_) {
+                return false;
+            }
+        }
+
         window.addWebsite = async function() {
-            const name = document.getElementById('newWebsiteName').value;
-            const url = document.getElementById('newWebsiteUrl').value;
+            const name = document.getElementById('newWebsiteName').value.trim();
+            const url = document.getElementById('newWebsiteUrl').value.trim();
             const language = document.getElementById('newWebsiteLanguage').value;
 
-            if (!name || !url || !language) {
-                window.showNotification('Veuillez remplir tous les champs', 'error');
+            // Validation
+            if (!name || !url) {
+                window.showNotification('⚠️ Nom et URL requis', 'error');
                 return;
             }
 
-            window.showLoading('Ajout du site...');
+            // Valider format URL
+            if (!isValidUrl(url)) {
+                window.showNotification('⚠️ Format d\'URL invalide. Exemple: https://monsite.com', 'error');
+                return;
+            }
 
             try {
+                window.showLoading('🌐 Création du site et analyse SEO en cours...');
+                
                 const response = await fetch(`${API_URL}/api/websites`, {
                     method: 'POST',
                     headers: {
@@ -2367,27 +2384,39 @@ console.log('✅ Frontend auto-analyze UI code loaded');
                     },
                     body: JSON.stringify({ name, url, language })
                 });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    window.showNotification('Site ajouté avec succès !', 'success');
-                    closeAddWebsiteModal();
-                    
-                    // ✨ Afficher le code pixel automatiquement
-                    setTimeout(() => {
-                        window.showPixelCodeModal(data.website);
-                    }, 500);
-                    
-                    await loadWebsites();
-                } else {
-                    window.showNotification(data.error || 'Erreur lors de l\'ajout', 'error');
-                }
-            } catch (error) {
-                console.error('Add website error:', error);
-                window.showNotification('Erreur de connexion au serveur', 'error');
-            } finally {
+                
                 window.hideLoading();
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Erreur lors de la création du site');
+                }
+                
+                const data = await response.json();
+                
+                // Debug: Afficher ce que le backend retourne
+                console.log('📥 Backend response:', data);
+                console.log('📊 Analysis data:', data.analysis);
+                
+                closeAddWebsiteModal();
+                
+                // ────────────────────────────────────────────────────────────
+                // AFFICHER LE RÉSULTAT DE L'ANALYSE AUTOMATIQUE
+                // ────────────────────────────────────────────────────────────
+                
+                if (data.analysis) {
+                    console.log('✅ Showing auto-analysis modal');
+                    showAutoAnalysisResult(data.website, data.analysis);
+                } else {
+                    console.log('⚠️ No analysis data, showing simple notification');
+                    window.showNotification('✅ Site créé avec succès!', 'success');
+                    await loadWebsites(); // Recharger la liste des sites
+                }
+                
+            } catch (error) {
+                window.hideLoading();
+                console.error('❌ Create website error:', error);
+                window.showNotification(`❌ ${error.message}`, 'error');
             }
         }
 
