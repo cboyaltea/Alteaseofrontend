@@ -2211,10 +2211,18 @@
             const websiteId = document.getElementById('analyticsWebsite')?.value || '';
             
             try {
-                // Si pas de websiteId sélectionné, charger les sites d'abord
-                let selectedWebsiteId = websiteId;
+                console.log('📊 Loading analytics for websiteId:', websiteId || 'ALL');
                 
-                if (!selectedWebsiteId) {
+                // Construire l'URL avec dates
+                const startDate = new Date(Date.now() - 30 * 24 * 3600000).toISOString().split('T')[0];
+                const endDate = new Date().toISOString().split('T')[0];
+                
+                let allAnalytics = [];
+                
+                if (!websiteId || websiteId === '') {
+                    // Charger TOUS les sites et leurs analytics
+                    console.log('📊 Loading ALL sites analytics...');
+                    
                     const websitesResponse = await fetch(`${API_URL}/api/websites`, {
                         headers: { 'Authorization': `Bearer ${currentToken}` }
                     });
@@ -2227,60 +2235,162 @@
                         return;
                     }
                     
-                    selectedWebsiteId = websites[0]._id;
-                }
-                
-                // Construire l'URL avec websiteId et dates
-                const startDate = new Date(Date.now() - 30 * 24 * 3600000).toISOString().split('T')[0];
-                const endDate = new Date().toISOString().split('T')[0];
-                let url = `${API_URL}/api/analytics?websiteId=${selectedWebsiteId}&startDate=${startDate}&endDate=${endDate}`;
-                
-                const response = await fetch(url, {
-                    headers: { 'Authorization': `Bearer ${currentToken}` }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                // data est un tableau d'analytics
-                if (Array.isArray(data) && data.length > 0) {
-                    // Grouper par pageUrl
-                    const groupedData = {};
-                    data.forEach(item => {
-                        const url = item.pageUrl || '/';
-                        if (!groupedData[url]) {
-                            groupedData[url] = { pageviews: 0, totalTime: 0, count: 0 };
+                    console.log(`📊 Found ${websites.length} site(s)`);
+                    
+                    // Charger les analytics pour chaque site
+                    for (const site of websites) {
+                        const url = `${API_URL}/api/analytics?websiteId=${site._id}&startDate=${startDate}&endDate=${endDate}`;
+                        const response = await fetch(url, {
+                            headers: { 'Authorization': `Bearer ${currentToken}` }
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            const analytics = Array.isArray(data) ? data : (data.analytics || []);
+                            
+                            // Ajouter le nom du site à chaque analytics
+                            analytics.forEach(a => {
+                                a.siteName = site.name;
+                                a.siteUrl = site.url;
+                            });
+                            
+                            allAnalytics = allAnalytics.concat(analytics);
+                            console.log(`✅ Loaded ${analytics.length} analytics for ${site.name}`);
                         }
-                        groupedData[url].pageviews++;
-                        groupedData[url].count++;
+                    }
+                } else {
+                    // Charger UN site spécifique
+                    console.log('📊 Loading analytics for specific site:', websiteId);
+                    
+                    const url = `${API_URL}/api/analytics?websiteId=${websiteId}&startDate=${startDate}&endDate=${endDate}`;
+                    const response = await fetch(url, {
+                        headers: { 'Authorization': `Bearer ${currentToken}` }
                     });
                     
-                    const analyticsHTML = Object.entries(groupedData).map(([url, stats]) => `
-                        <div class="bg-white rounded-xl shadow-sm p-6">
-                            <h3 class="text-lg font-bold text-gray-900 mb-4">${url}</h3>
-                            <div class="grid grid-cols-2 gap-4">
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    allAnalytics = Array.isArray(data) ? data : (data.analytics || []);
+                    console.log(`✅ Loaded ${allAnalytics.length} analytics`);
+                }
+                
+                console.log('📊 Total analytics:', allAnalytics.length);
+                
+                // Afficher les analytics
+                if (allAnalytics.length > 0) {
+                    // Grouper par site et par page
+                    const groupedBySite = {};
+                    
+                    allAnalytics.forEach(item => {
+                        const siteName = item.siteName || 'Site inconnu';
+                        const pageUrl = item.pageUrl || '/';
+                        
+                        if (!groupedBySite[siteName]) {
+                            groupedBySite[siteName] = {};
+                        }
+                        
+                        if (!groupedBySite[siteName][pageUrl]) {
+                            groupedBySite[siteName][pageUrl] = {
+                                pageviews: 0,
+                                clicks: 0,
+                                count: 0
+                            };
+                        }
+                        
+                        groupedBySite[siteName][pageUrl].count++;
+                        
+                        if (item.event?.type === 'pageview') {
+                            groupedBySite[siteName][pageUrl].pageviews++;
+                        } else if (item.event?.type === 'click') {
+                            groupedBySite[siteName][pageUrl].clicks++;
+                        }
+                    });
+                    
+                    // Construire le HTML
+                    let analyticsHTML = '';
+                    
+                    Object.entries(groupedBySite).forEach(([siteName, pages]) => {
+                        // Si plusieurs sites, afficher le nom du site
+                        if (Object.keys(groupedBySite).length > 1) {
+                            analyticsHTML += `
+                                <div class="mb-6">
+                                    <h2 class="text-2xl font-bold text-gray-900 mb-4">📊 ${siteName}</h2>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            `;
+                        } else {
+                            analyticsHTML += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
+                        }
+                        
+                        Object.entries(pages).forEach(([pageUrl, stats]) => {
+                            analyticsHTML += `
+                                <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+                                    <h3 class="text-lg font-bold text-gray-900 mb-4 truncate" title="${pageUrl}">${pageUrl}</h3>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <p class="text-sm text-gray-600">Pages vues</p>
+                                            <p class="text-2xl font-bold text-blue-600">${stats.pageviews}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-600">Clics</p>
+                                            <p class="text-2xl font-bold text-green-600">${stats.clicks}</p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 pt-4 border-t border-gray-200">
+                                        <p class="text-sm text-gray-600">Total événements</p>
+                                        <p class="text-xl font-bold text-gray-900">${stats.count}</p>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        analyticsHTML += `</div>`;
+                        
+                        if (Object.keys(groupedBySite).length > 1) {
+                            analyticsHTML += `</div>`;
+                        }
+                    });
+                    
+                    // Ajouter un résumé global
+                    const totalEvents = allAnalytics.length;
+                    const totalPageviews = allAnalytics.filter(a => a.event?.type === 'pageview').length;
+                    const totalClicks = allAnalytics.filter(a => a.event?.type === 'click').length;
+                    
+                    const summaryHTML = `
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 mb-6 text-white">
+                            <h2 class="text-2xl font-bold mb-4">📈 Résumé Global</h2>
+                            <div class="grid grid-cols-3 gap-4">
                                 <div>
-                                    <p class="text-sm text-gray-600">Pages vues</p>
-                                    <p class="text-2xl font-bold text-gray-900">${stats.pageviews}</p>
+                                    <p class="text-blue-100 text-sm">Total événements</p>
+                                    <p class="text-3xl font-bold">${totalEvents}</p>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-600">Visites</p>
-                                    <p class="text-2xl font-bold text-gray-900">${stats.count}</p>
+                                    <p class="text-blue-100 text-sm">Pages vues</p>
+                                    <p class="text-3xl font-bold">${totalPageviews}</p>
+                                </div>
+                                <div>
+                                    <p class="text-blue-100 text-sm">Clics</p>
+                                    <p class="text-3xl font-bold">${totalClicks}</p>
                                 </div>
                             </div>
                         </div>
-                    `).join('');
+                    `;
                     
-                    document.getElementById('analyticsData').innerHTML = analyticsHTML;
+                    document.getElementById('analyticsData').innerHTML = summaryHTML + analyticsHTML;
+                    
+                    console.log('✅ Analytics displayed:', {
+                        sites: Object.keys(groupedBySite).length,
+                        totalEvents: totalEvents,
+                        pageviews: totalPageviews,
+                        clicks: totalClicks
+                    });
                 } else {
                     document.getElementById('analyticsData').innerHTML = 
                         '<p class="text-gray-500 text-center py-8">Aucune donnée d\'analyse disponible. Le pixel n\'a pas encore enregistré de données.</p>';
                 }
             } catch (error) {
-                console.error('Load analytics error:', error);
+                console.error('❌ Load analytics error:', error);
                 document.getElementById('analyticsData').innerHTML = 
                     `<p class="text-red-500 text-center py-8">Erreur de chargement: ${error.message}</p>`;
             }
@@ -2612,8 +2722,20 @@ ${scriptOpen} src="${API_URL.replace('/api', '')}/seo-pixel.js"${scriptClose}`;
                     loadContents();
                     break;
                 case 'analytics':
-                    loadWebsites();
-                    loadAnalytics();
+                    loadWebsites().then(() => {
+                        // Populer le dropdown des sites
+                        const analyticsSelect = document.getElementById('analyticsWebsite');
+                        if (analyticsSelect && window.currentWebsites) {
+                            const currentValue = analyticsSelect.value;
+                            analyticsSelect.innerHTML = '<option value="">Tous les sites</option>' +
+                                window.currentWebsites.map(w => 
+                                    `<option value="${w._id}">${escapeHtml(w.name)}</option>`
+                                ).join('');
+                            if (currentValue) analyticsSelect.value = currentValue;
+                        }
+                        // Puis charger les analytics
+                        loadAnalytics();
+                    });
                     break;
                 case 'users':
                     loadUsers();
