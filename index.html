@@ -2219,9 +2219,9 @@
             try {
                 console.log('📊 Loading analytics for websiteId:', websiteId || 'ALL');
                 
-                // Construire l'URL avec dates
+                // Construire l'URL avec dates (30 jours + lendemain pour inclure toutes les données)
                 const startDate = new Date(Date.now() - 30 * 24 * 3600000).toISOString().split('T')[0];
-                const endDate = new Date().toISOString().split('T')[0];
+                const endDate = new Date(Date.now() + 1 * 24 * 3600000).toISOString().split('T')[0]; // +1 jour
                 
                 console.log('📊 Date range:', startDate, '→', endDate);
                 
