@@ -1537,219 +1537,383 @@ window.createWebsite = async function() {
 // 🎭 MODAL: Résultat de l'analyse automatique
 // ═══════════════════════════════════════════════════════════════════
 
+// ═══════════════════════════════════════════════════════════════════
+// 🎭 MODAL AMÉLIORÉ: Résultat de l'analyse automatique avec détails
+// ═══════════════════════════════════════════════════════════════════
+// À remplacer dans index.html à partir de la ligne 1540
+
 function showAutoAnalysisResult(website, analysis) {
   const modal = document.createElement('div');
   modal.id = 'autoAnalysisResultModal';
   modal.className = 'fixed inset-0 z-50 overflow-y-auto';
   
+  // Calculer l'impact potentiel
+  const potentialImprovement = Math.min(100 - analysis.score.overall, 30);
+  const estimatedTrafficIncrease = Math.round(potentialImprovement * 2.5); // Estimation
+  
   modal.innerHTML = `
     <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onclick="closeAutoAnalysisModal()"></div>
     <div class="flex items-center justify-center min-h-screen p-4">
-      <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-8 animate-slideIn">
+      <div class="relative bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto animate-slideIn">
         
-        <!-- ──────────────────────────────────────────────────── -->
-        <!-- HEADER -->
-        <!-- ──────────────────────────────────────────────────── -->
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        <!-- HEADER AVEC BADGE DE STATUT -->
+        <!-- ══════════════════════════════════════════════════════════════ -->
         
-        <div class="flex justify-between items-start mb-6">
-          <div>
-            <div class="flex items-center mb-2">
-              <span class="text-4xl mr-3">🎉</span>
-              <h2 class="text-3xl font-bold text-gray-900">
-                Site créé avec succès!
-              </h2>
-            </div>
-            <div class="flex items-center text-gray-600 mt-2">
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
-              </svg>
-              <span class="font-semibold">${website.name}</span>
-              <span class="mx-2">•</span>
-              <a href="${website.url}" target="_blank" class="text-blue-600 hover:underline">
-                ${website.url}
-              </a>
-            </div>
-          </div>
-          <button onclick="closeAutoAnalysisModal()" 
-                  class="text-gray-400 hover:text-gray-600 transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
-        
-        <!-- ──────────────────────────────────────────────────── -->
-        <!-- SCORE SEO PRINCIPAL -->
-        <!-- ──────────────────────────────────────────────────── -->
-        
-        <div class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-xl p-6 mb-6 border border-blue-100">
-          <div class="flex items-center justify-between">
+        <div class="sticky top-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white p-6 rounded-t-2xl shadow-lg z-10">
+          <div class="flex justify-between items-start">
             <div class="flex-1">
               <div class="flex items-center mb-2">
-                <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                </svg>
-                <h3 class="text-xl font-semibold text-gray-900">
-                  Analyse SEO initiale terminée
-                </h3>
-              </div>
-              <p class="text-gray-600">
-                Votre site a été automatiquement analysé et des améliorations vous sont proposées
-              </p>
-            </div>
-            <div class="text-center ml-6">
-              <div class="relative">
-                <svg class="w-32 h-32 transform -rotate-90">
-                  <circle cx="64" cy="64" r="52" stroke="#e5e7eb" stroke-width="8" fill="none"/>
-                  <circle cx="64" cy="64" r="52" 
-                          stroke="${getScoreStrokeColor(analysis.score.overall)}" 
-                          stroke-width="8" 
-                          fill="none"
-                          stroke-dasharray="${(analysis.score.overall / 100) * 326.7} 326.7"
-                          stroke-linecap="round"/>
-                </svg>
-                <div class="absolute inset-0 flex flex-col items-center justify-center">
-                  <div class="text-5xl font-bold ${getScoreColor(analysis.score.overall)}">
-                    ${analysis.score.overall}
-                  </div>
-                  <div class="text-sm text-gray-600 font-medium">/ 100</div>
+                <span class="text-4xl mr-3">🎉</span>
+                <div>
+                  <h2 class="text-3xl font-bold mb-1">
+                    Analyse SEO Complète
+                  </h2>
+                  <p class="text-blue-100 text-sm">
+                    Analyse automatique terminée pour ${website.name}
+                  </p>
                 </div>
               </div>
-              <div class="text-sm font-medium mt-2 ${getScoreColor(analysis.score.overall)}">
-                ${getScoreLabel(analysis.score.overall)}
+              <div class="flex items-center text-white mt-3 bg-white bg-opacity-20 rounded-lg px-4 py-2 inline-flex">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                </svg>
+                <a href="${website.url}" target="_blank" class="hover:underline font-medium">
+                  ${website.url}
+                </a>
               </div>
             </div>
-          </div>
-        </div>
-        
-        <!-- ──────────────────────────────────────────────────── -->
-        <!-- SCORES DÉTAILLÉS -->
-        <!-- ──────────────────────────────────────────────────── -->
-        
-        <div class="mb-6">
-          <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
-            Scores détaillés
-          </h4>
-          <div class="grid grid-cols-5 gap-3">
-            ${renderScoreCard('Meta', analysis.score.meta, 'blue', 'M')}
-            ${renderScoreCard('Contenu', analysis.score.content, 'green', 'C')}
-            ${renderScoreCard('Structure', analysis.score.structure, 'purple', 'S')}
-            ${renderScoreCard('Performance', analysis.score.performance, 'orange', 'P')}
-            ${renderScoreCard('Mobile', analysis.score.mobile, 'pink', 'M')}
-          </div>
-        </div>
-        
-        <!-- ──────────────────────────────────────────────────── -->
-        <!-- PROBLÈMES DÉTECTÉS -->
-        <!-- ──────────────────────────────────────────────────── -->
-        
-        <div class="bg-amber-50 border-l-4 border-amber-400 rounded-lg p-4 mb-6">
-          <div class="flex items-start">
-            <div class="flex-shrink-0">
-              <svg class="w-6 h-6 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"></path>
+            <button onclick="closeAutoAnalysisModal()" 
+                    class="text-white hover:text-gray-200 transition-colors ml-4">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
-            </div>
-            <div class="ml-3 flex-1">
-              <h4 class="font-bold text-gray-900 mb-1">
-                ${analysis.issuesCount} problème(s) détecté(s) sur votre site
-              </h4>
-              <p class="text-sm text-gray-700">
-                Dont <strong>${analysis.criticalIssuesCount} critique(s)</strong> nécessitant une attention immédiate pour améliorer votre référencement
+            </button>
+          </div>
+        </div>
+        
+        <div class="p-8">
+        
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        <!-- SCORE PRINCIPAL AVEC IMPACT ET COMPARAISON -->
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <!-- Score principal -->
+          <div class="lg:col-span-1">
+            <div class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-xl p-6 border-2 border-blue-200 h-full flex flex-col items-center justify-center">
+              <div class="text-center mb-4">
+                <h3 class="text-lg font-bold text-gray-900 mb-1">
+                  Score SEO Global
+                </h3>
+                <p class="text-sm text-gray-600">
+                  Analyse de ${analysis.issuesCount} critères
+                </p>
+              </div>
+              <div class="relative mb-4">
+                <svg class="w-40 h-40 transform -rotate-90">
+                  <circle cx="80" cy="80" r="70" stroke="#e5e7eb" stroke-width="10" fill="none"/>
+                  <circle cx="80" cy="80" r="70" 
+                          stroke="${getScoreStrokeColor(analysis.score.overall)}" 
+                          stroke-width="10" 
+                          fill="none"
+                          stroke-dasharray="${(analysis.score.overall / 100) * 439.8} 439.8"
+                          stroke-linecap="round"
+                          class="transition-all duration-1000"/>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <div class="text-6xl font-bold ${getScoreColor(analysis.score.overall)}">
+                    ${analysis.score.overall}
+                  </div>
+                  <div class="text-lg text-gray-600 font-medium">/ 100</div>
+                </div>
+              </div>
+              <div class="px-4 py-2 rounded-full ${getScoreBadgeClass(analysis.score.overall)} font-bold text-lg">
+                ${getScoreLabel(analysis.score.overall)}
+              </div>
+              <p class="text-xs text-gray-500 mt-3 text-center px-4">
+                ${getScoreExplanation(analysis.score.overall)}
               </p>
             </div>
           </div>
+          
+          <!-- Impact potentiel -->
+          <div class="lg:col-span-2 space-y-4">
+            <!-- Statistiques rapides -->
+            <div class="grid grid-cols-3 gap-4">
+              <div class="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-amber-600">${analysis.issuesCount}</div>
+                <div class="text-sm text-gray-600 font-medium mt-1">Problèmes</div>
+                <div class="text-xs text-gray-500 mt-1">
+                  dont ${analysis.criticalIssuesCount} critiques
+                </div>
+              </div>
+              <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-emerald-600">${analysis.rulesCreated}</div>
+                <div class="text-sm text-gray-600 font-medium mt-1">Règles créées</div>
+                <div class="text-xs text-gray-500 mt-1">
+                  corrections auto
+                </div>
+              </div>
+              <div class="bg-purple-50 border-2 border-purple-200 rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-purple-600">+${potentialImprovement}</div>
+                <div class="text-sm text-gray-600 font-medium mt-1">Points possible</div>
+                <div class="text-xs text-gray-500 mt-1">
+                  d'amélioration
+                </div>
+              </div>
+            </div>
+            
+            <!-- Impact business -->
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-6">
+              <div class="flex items-start">
+                <div class="flex-shrink-0 bg-green-100 rounded-full p-3">
+                  <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                  </svg>
+                </div>
+                <div class="ml-4 flex-1">
+                  <h4 class="text-lg font-bold text-gray-900 mb-2">
+                    📈 Impact potentiel sur votre business
+                  </h4>
+                  <ul class="space-y-2 text-sm text-gray-700">
+                    <li class="flex items-start">
+                      <span class="text-green-600 mr-2">✓</span>
+                      <span><strong>+${estimatedTrafficIncrease}%</strong> de trafic organique potentiel après optimisation</span>
+                    </li>
+                    <li class="flex items-start">
+                      <span class="text-green-600 mr-2">✓</span>
+                      <span><strong>Meilleur positionnement</strong> sur les moteurs de recherche</span>
+                    </li>
+                    <li class="flex items-start">
+                      <span class="text-green-600 mr-2">✓</span>
+                      <span><strong>Taux de conversion</strong> amélioré grâce à l'UX optimisée</span>
+                    </li>
+                    <li class="flex items-start">
+                      <span class="text-green-600 mr-2">✓</span>
+                      <span><strong>Crédibilité renforcée</strong> aux yeux de Google et des visiteurs</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         
-        <!-- ──────────────────────────────────────────────────── -->
-        <!-- RÈGLES CRÉÉES AUTOMATIQUEMENT -->
-        <!-- ──────────────────────────────────────────────────── -->
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        <!-- SCORES DÉTAILLÉS PAR CATÉGORIE AVEC EXPLICATIONS -->
+        <!-- ══════════════════════════════════════════════════════════════ -->
         
-        ${analysis.rulesCreated > 0 ? `
-          <div class="bg-emerald-50 border-l-4 border-emerald-400 rounded-lg p-4 mb-6">
-            <div class="flex items-start">
-              <div class="flex-shrink-0">
-                <svg class="w-6 h-6 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path>
+        <div class="mb-8">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold text-gray-900">
+              📊 Analyse détaillée par catégorie
+            </h3>
+            <span class="text-sm text-gray-500">Cliquez sur une catégorie pour plus de détails</span>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            ${renderDetailedScoreCard('Meta Tags', analysis.score.meta, 'blue', '🏷️', 
+              'Title, description, Open Graph, balises essentielles pour le référencement',
+              'Optimisez vos balises meta pour améliorer le CTR dans les résultats de recherche')}
+            ${renderDetailedScoreCard('Contenu', analysis.score.content, 'green', '📝', 
+              'Qualité, longueur et structure du contenu textuel',
+              'Un contenu riche et pertinent améliore votre autorité et votre classement')}
+            ${renderDetailedScoreCard('Structure', analysis.score.structure, 'purple', '🏗️', 
+              'Hiérarchie des titres, liens internes, architecture',
+              'Une structure claire aide Google à comprendre et indexer votre contenu')}
+            ${renderDetailedScoreCard('Performance', analysis.score.performance, 'orange', '⚡', 
+              'Vitesse de chargement et optimisations techniques',
+              'Un site rapide améliore l\'UX et est favorisé par Google')}
+            ${renderDetailedScoreCard('Accessibilité', analysis.score.accessibility || analysis.score.mobile, 'pink', '♿', 
+              'Accessibilité pour tous les utilisateurs',
+              'Un site accessible touche plus d\'utilisateurs et est mieux référencé')}
+            ${renderDetailedScoreCard('Mobile', analysis.score.mobile, 'cyan', '📱', 
+              'Responsive design et optimisation mobile',
+              'Google utilise le mobile-first indexing - c\'est critique!')}
+          </div>
+        </div>
+        
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        <!-- LISTE COMPLÈTE DES PROBLÈMES AVEC SOLUTIONS -->
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        
+        <div class="mb-8">
+          <div class="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-xl p-6">
+            <div class="flex items-start mb-4">
+              <div class="flex-shrink-0 bg-amber-100 rounded-full p-3">
+                <svg class="w-6 h-6 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"></path>
                 </svg>
               </div>
-              <div class="ml-3 flex-1">
-                <h4 class="font-bold text-gray-900 mb-1">
-                  ${analysis.rulesCreated} règle(s) SEO créée(s) automatiquement ✨
-                </h4>
-                <p class="text-sm text-gray-700 mb-3">
-                  Des règles ont été générées pour corriger automatiquement les problèmes critiques. 
-                  Elles sont en mode <span class="font-semibold">DRAFT</span> - vous pouvez les activer manuellement ou toutes en une fois.
+              <div class="ml-4 flex-1">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">
+                  ⚠️ ${analysis.issuesCount} Problème(s) détecté(s) sur votre site
+                </h3>
+                <p class="text-sm text-gray-700 mb-4">
+                  Dont <strong class="text-red-600">${analysis.criticalIssuesCount} critique(s)</strong> nécessitant une attention immédiate. 
+                  ${analysis.rulesCreated > 0 ? 
+                    `<strong class="text-green-600">${analysis.rulesCreated} règle(s) de correction</strong> ont été créées automatiquement.` 
+                    : 'Aucune règle automatique nécessaire.'}
                 </p>
-                <div class="flex gap-2">
-                  <button onclick="viewAutoRules('${website._id}')" 
-                          class="px-4 py-2 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700 transition-colors font-medium">
-                    📋 Voir les règles
-                  </button>
+                
+                <!-- Bouton pour voir tous les problèmes -->
+                <button onclick="toggleProblemsDetail()" 
+                        id="toggleProblemsBtn"
+                        class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium text-sm">
+                  📋 Voir le détail de tous les problèmes
+                </button>
+                
+                <!-- Détails des problèmes (masqués par défaut) -->
+                <div id="problemsDetail" class="hidden mt-4 space-y-3">
+                  <div class="text-sm text-gray-600 italic mb-2">
+                    Voici la liste complète des problèmes détectés avec leurs solutions:
+                  </div>
+                  <!-- Les problèmes seront injectés ici dynamiquement -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        <!-- RÈGLES CRÉÉES AUTOMATIQUEMENT -->
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        
+        ${analysis.rulesCreated > 0 ? `
+          <div class="bg-gradient-to-r from-emerald-50 to-green-50 border-2 border-emerald-300 rounded-xl p-6 mb-8">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 bg-emerald-100 rounded-full p-3">
+                <svg class="w-6 h-6 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z"/>
+                </svg>
+              </div>
+              <div class="ml-4 flex-1">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">
+                  ✨ ${analysis.rulesCreated} Règle(s) SEO créée(s) automatiquement
+                </h3>
+                <p class="text-sm text-gray-700 mb-4">
+                  Notre IA a généré des règles pour corriger automatiquement les problèmes critiques détectés. 
+                  Ces règles sont en mode <span class="px-2 py-1 bg-gray-200 rounded font-semibold">DRAFT</span> 
+                  et doivent être activées pour prendre effet.
+                </p>
+                
+                <div class="bg-white bg-opacity-60 rounded-lg p-4 mb-4">
+                  <h4 class="font-semibold text-gray-900 mb-2">💡 Comment ça fonctionne?</h4>
+                  <ol class="text-sm text-gray-700 space-y-1.5 list-decimal list-inside">
+                    <li><strong>Les règles sont créées</strong> en mode brouillon automatiquement</li>
+                    <li><strong>Vous les activez</strong> en un clic (toutes d'un coup ou individuellement)</li>
+                    <li><strong>Le pixel SEO</strong> applique les corrections en temps réel sur votre site</li>
+                    <li><strong>Résultat:</strong> Votre SEO s'améliore sans toucher au code source!</li>
+                  </ol>
+                </div>
+                
+                <div class="flex flex-wrap gap-3">
                   <button onclick="activateAllAutoRules('${website._id}')" 
-                          class="px-4 py-2 bg-emerald-100 text-emerald-800 text-sm rounded-lg hover:bg-emerald-200 transition-colors font-medium">
-                    ⚡ Activer tout
+                          class="px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-lg hover:from-emerald-700 hover:to-green-700 transition-all font-bold shadow-lg hover:shadow-xl flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    ⚡ Activer toutes les règles maintenant
+                  </button>
+                  <button onclick="viewAutoRules('${website._id}')" 
+                          class="px-6 py-3 bg-white border-2 border-emerald-600 text-emerald-700 rounded-lg hover:bg-emerald-50 transition-colors font-bold flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    📋 Voir les règles en détail
                   </button>
                 </div>
               </div>
             </div>
           </div>
         ` : `
-          <div class="bg-blue-50 border-l-4 border-blue-400 rounded-lg p-4 mb-6">
+          <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 mb-8">
             <div class="flex items-start">
-              <div class="flex-shrink-0">
+              <div class="flex-shrink-0 bg-blue-100 rounded-full p-3">
                 <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"></path>
                 </svg>
               </div>
-              <div class="ml-3 flex-1">
-                <h4 class="font-bold text-gray-900 mb-1">
-                  Aucune règle critique nécessaire
-                </h4>
+              <div class="ml-4 flex-1">
+                <h3 class="text-lg font-bold text-gray-900 mb-2">
+                  ℹ️ Aucune règle critique nécessaire
+                </h3>
                 <p class="text-sm text-gray-700">
-                  Votre site n'a pas de problèmes critiques nécessitant des corrections automatiques. Consultez les recommandations ci-dessous pour optimiser davantage votre SEO.
+                  Votre site n'a pas de problèmes critiques nécessitant des corrections automatiques immédiates. 
+                  Consultez les recommandations IA ci-dessous pour optimiser davantage votre SEO et améliorer votre score.
                 </p>
               </div>
             </div>
           </div>
         `}
         
-        <!-- ──────────────────────────────────────────────────── -->
-        <!-- RECOMMANDATIONS IA -->
-        <!-- ──────────────────────────────────────────────────── -->
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        <!-- RECOMMANDATIONS IA AVEC PRIORITÉS -->
+        <!-- ══════════════════════════════════════════════════════════════ -->
         
         ${analysis.recommendations && analysis.recommendations.length > 0 ? `
-          <div class="mb-6">
-            <div class="flex items-center mb-3">
-              <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-              </svg>
-              <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                Recommandations IA (Top ${analysis.recommendations.length})
-              </h4>
+          <div class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center">
+                <div class="bg-purple-100 rounded-full p-2 mr-3">
+                  <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-gray-900">
+                    🤖 Recommandations IA (Top ${analysis.recommendations.length})
+                  </h3>
+                  <p class="text-sm text-gray-600">
+                    Générées par Claude AI pour votre site spécifiquement
+                  </p>
+                </div>
+              </div>
             </div>
-            <div class="space-y-2 max-h-64 overflow-y-auto pr-2" style="scrollbar-width: thin;">
+            
+            <div class="space-y-3">
               ${analysis.recommendations.map((rec, idx) => `
-                <div class="border-l-4 ${getPriorityBorderColor(rec.priority)} bg-gray-50 rounded-r-lg p-3 hover:shadow-sm transition-shadow">
-                  <div class="flex justify-between items-start mb-1">
+                <div class="border-2 ${getPriorityBorderClass(rec.priority)} bg-gradient-to-r ${getPriorityGradientClass(rec.priority)} rounded-xl p-5 hover:shadow-lg transition-all">
+                  <div class="flex items-start justify-between mb-2">
                     <div class="flex items-start flex-1">
-                      <span class="text-xs font-bold text-gray-500 mr-2">${idx + 1}.</span>
+                      <div class="flex-shrink-0 w-8 h-8 rounded-full ${getPriorityBadgeClass(rec.priority)} flex items-center justify-center font-bold text-sm mr-3">
+                        ${idx + 1}
+                      </div>
                       <div class="flex-1">
-                        <div class="font-semibold text-gray-900 text-sm">${rec.title}</div>
-                        <p class="text-xs text-gray-600 mt-1">${rec.description}</p>
+                        <div class="flex items-center gap-2 mb-2">
+                          <h4 class="font-bold text-gray-900 text-base">${rec.title}</h4>
+                          <span class="text-xs px-2.5 py-1 rounded-full font-bold ${getPriorityBadgeClass(rec.priority)} uppercase">
+                            ${rec.priority}
+                          </span>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-3 leading-relaxed">${rec.description}</p>
+                        
+                        ${rec.expectedImpact ? `
+                          <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-800 rounded-lg text-xs font-medium mb-3">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                            Impact: ${rec.expectedImpact}
+                          </div>
+                        ` : ''}
+                        
                         ${rec.implementation ? `
-                          <details class="mt-2">
-                            <summary class="text-xs text-blue-600 cursor-pointer hover:underline">
+                          <details class="mt-3">
+                            <summary class="text-sm text-blue-600 cursor-pointer hover:underline font-medium flex items-center gap-2">
+                              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                              </svg>
                               Voir le code d'implémentation
                             </summary>
-                            <pre class="mt-2 p-2 bg-gray-900 text-gray-100 text-xs rounded overflow-x-auto"><code>${escapeHtml(rec.implementation)}</code></pre>
+                            <div class="mt-3 p-4 bg-gray-900 rounded-lg overflow-x-auto">
+                              <pre class="text-gray-100 text-xs"><code>${escapeHtml(rec.implementation)}</code></pre>
+                            </div>
                           </details>
                         ` : ''}
                       </div>
                     </div>
-                    <span class="text-xs px-2 py-1 rounded font-medium ml-2 whitespace-nowrap ${getPriorityBadgeClass(rec.priority)}">
-                      ${rec.priority.toUpperCase()}
-                    </span>
                   </div>
                 </div>
               `).join('')}
@@ -1757,18 +1921,76 @@ function showAutoAnalysisResult(website, analysis) {
           </div>
         ` : ''}
         
-        <!-- ──────────────────────────────────────────────────── -->
-        <!-- ACTIONS FINALES -->
-        <!-- ──────────────────────────────────────────────────── -->
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        <!-- PROCHAINES ÉTAPES SUGGÉRÉES -->
+        <!-- ══════════════════════════════════════════════════════════════ -->
         
-        <div class="flex justify-between items-center pt-6 border-t border-gray-200">
-          <button onclick="viewFullAnalysis('${analysis.analysisId}')" 
-                  class="px-6 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium flex items-center">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
-            Analyse complète
-          </button>
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-xl p-6 mb-8">
+          <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+            <span class="text-2xl mr-2">🎯</span>
+            Prochaines étapes recommandées
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs mr-3">
+                1
+              </div>
+              <div>
+                <h4 class="font-semibold text-gray-900 mb-1">Activer les règles créées</h4>
+                <p class="text-sm text-gray-600">Cliquez sur "Activer toutes les règles" pour appliquer les corrections</p>
+              </div>
+            </div>
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs mr-3">
+                2
+              </div>
+              <div>
+                <h4 class="font-semibold text-gray-900 mb-1">Installer le pixel SEO</h4>
+                <p class="text-sm text-gray-600">Pour que les corrections prennent effet sur votre site</p>
+              </div>
+            </div>
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs mr-3">
+                3
+              </div>
+              <div>
+                <h4 class="font-semibold text-gray-900 mb-1">Implémenter les recommandations</h4>
+                <p class="text-sm text-gray-600">Suivez les recommandations IA ci-dessus par ordre de priorité</p>
+              </div>
+            </div>
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs mr-3">
+                4
+              </div>
+              <div>
+                <h4 class="font-semibold text-gray-900 mb-1">Relancer une analyse</h4>
+                <p class="text-sm text-gray-600">Après 1-2 semaines, pour mesurer les améliorations</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        <!-- ACTIONS FINALES -->
+        <!-- ══════════════════════════════════════════════════════════════ -->
+        
+        <div class="flex flex-wrap justify-between items-center gap-4 pt-6 border-t-2 border-gray-200">
+          <div class="flex flex-wrap gap-3">
+            <button onclick="viewFullAnalysis('${analysis.analysisId}')" 
+                    class="px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              Analyse complète
+            </button>
+            <button onclick="downloadReport('${website._id}')" 
+                    class="px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              Télécharger le rapport
+            </button>
+          </div>
           <div class="flex gap-3">
             <button onclick="closeAutoAnalysisModal(); loadWebsites();" 
                     class="px-6 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
@@ -1776,87 +1998,118 @@ function showAutoAnalysisResult(website, analysis) {
             </button>
             ${analysis.rulesCreated > 0 ? `
               <button onclick="activateAllAutoRules('${website._id}')" 
-                      class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-lg hover:shadow-xl flex items-center">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      class="px-8 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 transition-all font-bold shadow-lg hover:shadow-xl flex items-center animate-pulse">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                 </svg>
-                Activer toutes les règles
+                ⚡ Activer toutes les règles
               </button>
             ` : ''}
           </div>
         </div>
         
+        </div>
       </div>
     </div>
   `;
   
   document.body.appendChild(modal);
+  
+  // Initialiser l'animation du score après un court délai
+  setTimeout(() => {
+    animateScoreCircle();
+  }, 100);
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// 🎨 FONCTIONS HELPER POUR LE MODAL
+// 🎨 FONCTIONS HELPER AMÉLIORÉES
 // ═══════════════════════════════════════════════════════════════════
 
-function getScoreColor(score) {
-  if (score >= 80) return 'text-green-600';
-  if (score >= 60) return 'text-yellow-600';
-  if (score >= 40) return 'text-orange-600';
-  return 'text-red-600';
+function getScoreBadgeClass(score) {
+  if (score >= 80) return 'bg-green-100 text-green-800';
+  if (score >= 60) return 'bg-yellow-100 text-yellow-800';
+  if (score >= 40) return 'bg-orange-100 text-orange-800';
+  return 'bg-red-100 text-red-800';
 }
 
-function getScoreStrokeColor(score) {
-  if (score >= 80) return '#10b981'; // green
-  if (score >= 60) return '#eab308'; // yellow
-  if (score >= 40) return '#f97316'; // orange
-  return '#ef4444'; // red
+function getScoreExplanation(score) {
+  if (score >= 90) return 'Votre site est excellemment optimisé pour le SEO! Continuez ainsi.';
+  if (score >= 80) return 'Très bon score! Quelques petites améliorations sont possibles.';
+  if (score >= 70) return 'Bon départ! Suivez les recommandations pour progresser.';
+  if (score >= 60) return 'Score moyen. Des améliorations importantes sont nécessaires.';
+  if (score >= 50) return 'Score faible. Votre site nécessite des optimisations urgentes.';
+  return 'Score critique. Votre SEO pénalise fortement votre visibilité.';
 }
 
-function getScoreLabel(score) {
-  if (score >= 90) return 'Excellent';
-  if (score >= 80) return 'Très bon';
-  if (score >= 70) return 'Bon';
-  if (score >= 60) return 'Moyen';
-  if (score >= 50) return 'Faible';
-  return 'Critique';
-}
-
-function renderScoreCard(label, score, color, icon) {
+function renderDetailedScoreCard(label, score, color, icon, description, impact) {
+  const scoreColor = getScoreColor(score);
   const bgColor = `bg-${color}-50`;
-  const textColor = `text-${color}-600`;
   const borderColor = `border-${color}-200`;
   
   return `
-    <div class="text-center p-4 ${bgColor} rounded-lg border ${borderColor} hover:shadow-md transition-shadow">
-      <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">${icon}</div>
-      <div class="text-3xl font-bold ${textColor} mb-1">${score}</div>
-      <div class="text-xs text-gray-600 font-medium">${label}</div>
+    <div class="group ${bgColor} border-2 ${borderColor} rounded-xl p-5 hover:shadow-xl transition-all cursor-pointer">
+      <div class="flex items-start justify-between mb-3">
+        <div class="flex items-center">
+          <span class="text-3xl mr-3">${icon}</span>
+          <div>
+            <h4 class="font-bold text-gray-900">${label}</h4>
+            <p class="text-xs text-gray-600 mt-0.5">${description}</p>
+          </div>
+        </div>
+        <div class="text-3xl font-bold ${scoreColor}">${score}</div>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+        <div class="${getScoreBarColor(score)} h-2 rounded-full transition-all duration-1000" 
+             style="width: ${score}%"></div>
+      </div>
+      <p class="text-xs text-gray-600 italic">${impact}</p>
     </div>
   `;
 }
 
-function getPriorityBorderColor(priority) {
-  if (priority === 'high') return 'border-red-500';
-  if (priority === 'medium') return 'border-orange-500';
-  return 'border-blue-500';
+function getScoreBarColor(score) {
+  if (score >= 80) return 'bg-green-500';
+  if (score >= 60) return 'bg-yellow-500';
+  if (score >= 40) return 'bg-orange-500';
+  return 'bg-red-500';
 }
 
-function getPriorityBadgeClass(priority) {
-  if (priority === 'high') return 'bg-red-100 text-red-800';
-  if (priority === 'medium') return 'bg-orange-100 text-orange-800';
-  return 'bg-blue-100 text-blue-800';
+function getPriorityBorderClass(priority) {
+  if (priority === 'high') return 'border-red-400';
+  if (priority === 'medium') return 'border-orange-400';
+  return 'border-blue-400';
 }
 
-function escapeHtml(text) {
-  const map = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;'
-  };
-  return text.replace(/[&<>"']/g, m => map[m]);
+function getPriorityGradientClass(priority) {
+  if (priority === 'high') return 'from-red-50 to-pink-50';
+  if (priority === 'medium') return 'from-orange-50 to-amber-50';
+  return 'from-blue-50 to-indigo-50';
 }
 
+function toggleProblemsDetail() {
+  const detail = document.getElementById('problemsDetail');
+  const btn = document.getElementById('toggleProblemsBtn');
+  
+  if (detail.classList.contains('hidden')) {
+    detail.classList.remove('hidden');
+    btn.textContent = '▲ Masquer les détails';
+  } else {
+    detail.classList.add('hidden');
+    btn.textContent = '📋 Voir le détail de tous les problèmes';
+  }
+}
+
+function animateScoreCircle() {
+  // Animation du cercle de score au chargement
+  const circles = document.querySelectorAll('circle[stroke-dasharray]');
+  circles.forEach(circle => {
+    circle.style.transition = 'stroke-dasharray 2s ease-out';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// FIN DU CODE AMÉLIORÉ
+// ═══════════════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════════════
 // 🔧 FONCTIONS D'ACTION
 // ═══════════════════════════════════════════════════════════════════
