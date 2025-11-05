@@ -4348,32 +4348,78 @@ ${scriptClose}
             document.getElementById('rulePriority').value = rule.priority || 'medium';
             document.getElementById('ruleStatus').value = rule.status || 'draft';
             
-            // Populate modifications
-            const mods = rule.modifications || {};
+            // Reset all checkboxes first
+            document.getElementById('modTitle').checked = false;
+            document.getElementById('modMeta').checked = false;
+            document.getElementById('modH1').checked = false;
+            document.getElementById('modOG').checked = false;
+            document.getElementById('modTwitter').checked = false;
+            document.getElementById('modCanonical').checked = false;
+            document.getElementById('modRobots').checked = false;
+            document.getElementById('modSchema').checked = false;
             
-            if (mods.title?.enabled) {
-                document.getElementById('modTitle').checked = true;
-                document.getElementById('titleAction').value = mods.title.action || 'replace';
-                document.getElementById('titleValue').value = mods.title.value || mods.title.template || '';
+            // Clear all values
+            document.getElementById('titleValue').value = '';
+            document.getElementById('metaValue').value = '';
+            document.getElementById('h1Value').value = '';
+            
+            // Populate modifications from array format
+            const mods = rule.modifications || [];
+            
+            if (Array.isArray(mods)) {
+                // New format: array of modifications
+                mods.forEach(mod => {
+                    if (mod.selector === 'title' && mod.type === 'meta') {
+                        document.getElementById('modTitle').checked = true;
+                        document.getElementById('titleValue').value = mod.content || '';
+                    }
+                    else if (mod.selector === 'meta[name="description"]' && mod.type === 'meta') {
+                        document.getElementById('modMeta').checked = true;
+                        document.getElementById('metaValue').value = mod.attributes?.content || '';
+                    }
+                    else if (mod.selector === 'h1' && mod.type === 'content') {
+                        document.getElementById('modH1').checked = true;
+                        document.getElementById('h1Value').value = mod.content || '';
+                    }
+                    else if (mod.selector === 'meta[property="og:type"]') {
+                        document.getElementById('modOG').checked = true;
+                    }
+                    else if (mod.selector === 'meta[name="twitter:card"]') {
+                        document.getElementById('modTwitter').checked = true;
+                    }
+                    else if (mod.selector === 'link[rel="canonical"]') {
+                        document.getElementById('modCanonical').checked = true;
+                    }
+                    else if (mod.selector === 'meta[name="robots"]') {
+                        document.getElementById('modRobots').checked = true;
+                    }
+                    else if (mod.type === 'inject' && mod.selector === 'head') {
+                        document.getElementById('modSchema').checked = true;
+                    }
+                });
+            } else {
+                // Old format: object with enabled flags (backward compatibility)
+                if (mods.title?.enabled) {
+                    document.getElementById('modTitle').checked = true;
+                    document.getElementById('titleValue').value = mods.title.value || mods.title.template || '';
+                }
+                
+                if (mods.metaDescription?.enabled) {
+                    document.getElementById('modMeta').checked = true;
+                    document.getElementById('metaValue').value = mods.metaDescription.value || '';
+                }
+                
+                if (mods.h1?.enabled) {
+                    document.getElementById('modH1').checked = true;
+                    document.getElementById('h1Value').value = mods.h1.value || '';
+                }
+                
+                document.getElementById('modOG').checked = mods.openGraph?.enabled || false;
+                document.getElementById('modTwitter').checked = mods.twitterCard?.enabled || false;
+                document.getElementById('modCanonical').checked = mods.canonical?.enabled || false;
+                document.getElementById('modRobots').checked = mods.robots?.enabled || false;
+                document.getElementById('modSchema').checked = mods.structuredData?.enabled || false;
             }
-            
-            if (mods.metaDescription?.enabled) {
-                document.getElementById('modMeta').checked = true;
-                document.getElementById('metaAction').value = mods.metaDescription.action || 'replace';
-                document.getElementById('metaValue').value = mods.metaDescription.value || '';
-            }
-            
-            if (mods.h1?.enabled) {
-                document.getElementById('modH1').checked = true;
-                document.getElementById('h1Action').value = mods.h1.action || 'replace';
-                document.getElementById('h1Value').value = mods.h1.value || '';
-            }
-            
-            document.getElementById('modOG').checked = mods.openGraph?.enabled || false;
-            document.getElementById('modTwitter').checked = mods.twitterCard?.enabled || false;
-            document.getElementById('modCanonical').checked = mods.canonical?.enabled || false;
-            document.getElementById('modRobots').checked = mods.robots?.enabled || false;
-            document.getElementById('modSchema').checked = mods.structuredData?.enabled || false;
             
             updateModificationSections();
         }
