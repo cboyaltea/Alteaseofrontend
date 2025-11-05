@@ -3687,33 +3687,21 @@ ${scriptClose}
             try {
                 window.showLoading('Chargement de l\'analyse...');
                 
-                // Récupérer les détails du site
-                const websiteResponse = await fetch(`${API_URL}/api/websites/${websiteId}`, {
+                // Récupérer l'analyse du site
+                const response = await fetch(`${API_URL}/api/websites/${websiteId}/analysis`, {
                     headers: { 'Authorization': `Bearer ${currentToken}` }
                 });
-                const websiteData = await websiteResponse.json();
-                
-                if (!websiteData.success || !websiteData.website) {
-                    throw new Error('Site introuvable');
-                }
-                
-                // Lancer une nouvelle analyse
-                const analysisResponse = await fetch(`${API_URL}/api/websites/${websiteId}/analyze`, {
-                    method: 'POST',
-                    headers: { 
-                        'Authorization': `Bearer ${currentToken}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                const analysisData = await analysisResponse.json();
+                const data = await response.json();
                 
                 window.hideLoading();
                 
-                if (analysisData.success && analysisData.analysis) {
-                    showAutoAnalysisResult(websiteData.website, analysisData.analysis);
-                } else {
-                    throw new Error('Analyse non disponible');
+                if (!data.success) {
+                    // Si pas d'analyse disponible, afficher un message
+                    window.showNotification('ℹ️ Aucune analyse disponible pour ce site. Créez d\'abord une analyse via le pixel.', 'info');
+                    return;
                 }
+                
+                showAutoAnalysisResult(data.website, data.analysis);
                 
             } catch (error) {
                 window.hideLoading();
