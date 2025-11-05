@@ -2039,6 +2039,15 @@ function getScoreStrokeColor(score) {
   return '#ef4444';  // red-500
 }
 
+function getScoreLabel(score) {
+  if (score >= 90) return '🌟 EXCELLENT';
+  if (score >= 80) return '✅ TRÈS BON';
+  if (score >= 70) return '👍 BON';
+  if (score >= 60) return '⚠️ MOYEN';
+  if (score >= 40) return '⚡ FAIBLE';
+  return '🔴 CRITIQUE';
+}
+
 function getScoreBadgeClass(score) {
   if (score >= 80) return 'bg-green-100 text-green-800';
   if (score >= 60) return 'bg-yellow-100 text-yellow-800';
