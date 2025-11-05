@@ -2637,12 +2637,19 @@ console.log('✅ Frontend auto-analyze UI code loaded');
                             
                             <!-- Boutons d'action -->
                             <div class="flex gap-2 mt-4">
+                                <button onclick="window.showAnalysisForWebsite('${website._id}')" 
+                                        class="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm hover:shadow flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                    </svg>
+                                    <span>Voir l'analyse</span>
+                                </button>
                                 <button onclick="window.showPixelCodeForWebsite('${website._id}')" 
                                         class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm hover:shadow flex items-center justify-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
                                     </svg>
-                                    <span>Voir le code</span>
+                                    <span>Code pixel</span>
                                 </button>
                                 <button onclick="window.deleteWebsite('${website._id}')" 
                                         class="bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all border border-red-200 hover:border-red-300"
@@ -3676,6 +3683,45 @@ ${scriptClose}
             }
         }
 
+        window.showAnalysisForWebsite = async function(websiteId) {
+            try {
+                window.showLoading('Chargement de l\'analyse...');
+                
+                // Récupérer les détails du site
+                const websiteResponse = await fetch(`${API_URL}/api/websites/${websiteId}`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                const websiteData = await websiteResponse.json();
+                
+                if (!websiteData.success || !websiteData.website) {
+                    throw new Error('Site introuvable');
+                }
+                
+                // Lancer une nouvelle analyse
+                const analysisResponse = await fetch(`${API_URL}/api/websites/${websiteId}/analyze`, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const analysisData = await analysisResponse.json();
+                
+                window.hideLoading();
+                
+                if (analysisData.success && analysisData.analysis) {
+                    showAutoAnalysisResult(websiteData.website, analysisData.analysis);
+                } else {
+                    throw new Error('Analyse non disponible');
+                }
+                
+            } catch (error) {
+                window.hideLoading();
+                console.error('Error loading analysis:', error);
+                window.showNotification('❌ Impossible de charger l\'analyse. Veuillez réessayer.', 'error');
+            }
+        }
+
         /**
          * Générer le code pixel pour un site spécifique
          */
@@ -3718,7 +3764,10 @@ ${scriptClose}
             });
             
             // Show selected tab
-            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            const tabElement = document.getElementById(`tab-${tabName}`);
+            if (tabElement) {
+                tabElement.classList.remove('hidden');
+            }
             
             // Add active class to selected button
             const activeButton = document.querySelector(`[data-tab="${tabName}"]`);
