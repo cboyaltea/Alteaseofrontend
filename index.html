@@ -1912,6 +1912,17 @@ function showAutoAnalysisResult(website, analysis) {
                             </div>
                           </details>
                         ` : ''}
+                        
+                        <!-- Bouton pour créer une règle -->
+                        <div class="mt-4 flex gap-2">
+                          <button onclick="createRuleFromRecommendation('${website._id}', ${JSON.stringify(rec).replace(/"/g, '&quot;')})" 
+                                  class="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg text-sm font-semibold transition-all shadow-sm hover:shadow flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Créer cette règle SEO
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -3708,6 +3719,101 @@ ${scriptClose}
                 window.hideLoading();
                 console.error('Error loading analysis:', error);
                 window.showNotification('❌ Impossible de charger l\'analyse. Veuillez réessayer.', 'error');
+            }
+        }
+
+        /**
+         * Créer une règle SEO à partir d'une recommandation
+         */
+        window.createRuleFromRecommendation = async function(websiteId, recommendation) {
+            try {
+                window.showLoading('Création de la règle SEO...');
+                
+                // Extraire le code d'implémentation pour créer les modifications
+                const implementation = recommendation.implementation || '';
+                
+                // Créer les modifications basées sur la recommandation
+                const modifications = [];
+                
+                // Détecter le type de modification basé sur le code
+                if (implementation.includes('<meta') || implementation.includes('meta name=')) {
+                    // Meta tag modification
+                    const metaMatch = implementation.match(/name="([^"]+)".*content="([^"]+)"/);
+                    if (metaMatch) {
+                        modifications.push({
+                            type: 'meta',
+                            action: 'upsert',
+                            selector: `meta[name="${metaMatch[1]}"]`,
+                            attributes: {
+                                name: metaMatch[1],
+                                content: metaMatch[2]
+                            }
+                        });
+                    }
+                } else if (implementation.includes('<img') || implementation.includes('alt=')) {
+                    // Image alt modification
+                    modifications.push({
+                        type: 'attribute',
+                        action: 'set',
+                        selector: 'img:not([alt])',
+                        attribute: 'alt',
+                        value: 'Image descriptive'
+                    });
+                } else if (implementation.includes('<h1') || implementation.includes('<h2')) {
+                    // Heading modification
+                    modifications.push({
+                        type: 'content',
+                        action: 'update',
+                        selector: 'h1, h2',
+                        content: 'Optimisé pour le SEO'
+                    });
+                } else {
+                    // Generic HTML injection
+                    modifications.push({
+                        type: 'inject',
+                        action: 'append',
+                        selector: 'head',
+                        content: implementation
+                    });
+                }
+                
+                // Créer la règle via l'API
+                const response = await fetch(`${API_URL}/api/seo-rules`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        websiteId: websiteId,
+                        name: recommendation.title,
+                        description: recommendation.description || 'Règle créée à partir d\'une recommandation IA',
+                        targeting: {
+                            matchType: 'all',
+                            urlPattern: '*'
+                        },
+                        modifications: modifications,
+                        status: 'draft',
+                        priority: recommendation.priority || 'medium',
+                        notes: `Recommandation IA: ${recommendation.expectedImpact || 'Amélioration SEO'}`,
+                        tags: ['ai-generated', 'recommendation']
+                    })
+                });
+                
+                const data = await response.json();
+                
+                window.hideLoading();
+                
+                if (data.success) {
+                    window.showNotification('✅ Règle SEO créée avec succès ! Vous pouvez l\'activer dans l\'onglet Règles SEO.', 'success');
+                } else {
+                    throw new Error(data.error || 'Échec de la création');
+                }
+                
+            } catch (error) {
+                window.hideLoading();
+                console.error('Error creating rule:', error);
+                window.showNotification('❌ Erreur lors de la création de la règle: ' + error.message, 'error');
             }
         }
 
