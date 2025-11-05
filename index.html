@@ -1067,6 +1067,23 @@
 
                 <!-- Body -->
                 <div class="px-8 py-6 max-h-[70vh] overflow-y-auto">
+                    <!-- SEO Insights Section (NEW) -->
+                    <div id="seoInsightsSection" class="mb-6 hidden">
+                        <div class="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center">
+                                    <span class="text-2xl mr-2">💡</span>
+                                    <h4 class="font-bold text-gray-900">Aide SEO - Dernière Analyse</h4>
+                                </div>
+                                <button onclick="document.getElementById('seoInsightsSection').classList.add('hidden')" 
+                                        class="text-gray-400 hover:text-gray-600">×</button>
+                            </div>
+                            <div id="seoInsightsContent" class="text-sm space-y-2">
+                                <!-- Content will be dynamically populated -->
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Basic Info Section -->
                     <div class="mb-8">
                         <h4 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
@@ -4300,11 +4317,106 @@ ${scriptClose}
                 
                 if (data.success && data.rule) {
                     populateRuleEditor(data.rule);
+                    // Load SEO insights for the website
+                    if (data.rule.websiteId) {
+                        const websiteId = data.rule.websiteId._id || data.rule.websiteId;
+                        await loadSEOInsights(websiteId);
+                    }
                 }
             } catch (error) {
                 console.error('Load rule error:', error);
                 window.showNotification('Erreur lors du chargement de la règle', 'error');
             }
+        }
+
+        async function loadSEOInsights(websiteId) {
+            try {
+                // Fetch latest SEO analysis for this website
+                const response = await fetch(`${API_URL}/api/seo/analyses?websiteId=${websiteId}&limit=1`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                const data = await response.json();
+                
+                if (data.success && data.analyses && data.analyses.length > 0) {
+                    const analysis = data.analyses[0];
+                    displaySEOInsights(analysis);
+                }
+            } catch (error) {
+                console.log('Could not load SEO insights:', error);
+            }
+        }
+
+        function displaySEOInsights(analysis) {
+            const section = document.getElementById('seoInsightsSection');
+            const content = document.getElementById('seoInsightsContent');
+            
+            // Store analysis globally for applyRecommendationToForm
+            window.currentSEOAnalysis = analysis;
+            
+            let html = '<div class="space-y-3">';
+            
+            // Current page data
+            if (analysis.url) {
+                html += `
+                    <div class="bg-white rounded p-3 border border-gray-200">
+                        <div class="font-semibold text-gray-700 mb-2">📄 Page analysée</div>
+                        <div class="text-xs text-gray-600 mb-1"><strong>URL:</strong> ${analysis.url}</div>
+                        ${analysis.data?.content?.title ? `<div class="text-xs text-gray-600 mb-1"><strong>Title actuel:</strong> ${analysis.data.content.title}</div>` : ''}
+                        ${analysis.data?.content?.metaDescription ? `<div class="text-xs text-gray-600"><strong>Meta:</strong> ${analysis.data.content.metaDescription}</div>` : ''}
+                    </div>
+                `;
+            }
+            
+            // Top recommendations
+            if (analysis.recommendations && analysis.recommendations.length > 0) {
+                html += `
+                    <div class="bg-white rounded p-3 border border-gray-200">
+                        <div class="font-semibold text-gray-700 mb-2">⭐ Recommandations prioritaires</div>
+                        <div class="space-y-2">
+                `;
+                
+                analysis.recommendations.slice(0, 3).forEach((rec, idx) => {
+                    const priority = rec.priority === 'high' ? '🔴' : rec.priority === 'medium' ? '🟠' : '🟡';
+                    const hasImplementation = rec.implementation && rec.implementation.trim().length > 0;
+                    
+                    html += `
+                        <div class="text-xs p-2 bg-gray-50 rounded border border-gray-100">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="font-medium">${priority} ${rec.title}</div>
+                                    <div class="text-gray-600 mt-1">${rec.description}</div>
+                                    ${rec.expectedImpact ? `<div class="text-green-600 mt-1">💚 ${rec.expectedImpact}</div>` : ''}
+                                </div>
+                                ${hasImplementation ? `
+                                    <button onclick="applyRecommendationToForm(${idx}, ${JSON.stringify(rec).replace(/"/g, '&quot;')})" 
+                                            class="ml-2 px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 flex-shrink-0">
+                                        Appliquer
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div></div>';
+            }
+            
+            // Score
+            if (analysis.score) {
+                const score = Math.round(analysis.score.overall);
+                const color = score >= 80 ? 'green' : score >= 60 ? 'yellow' : 'red';
+                html += `
+                    <div class="bg-white rounded p-3 border border-gray-200">
+                        <div class="font-semibold text-gray-700 mb-1">📊 Score SEO global</div>
+                        <div class="text-2xl font-bold text-${color}-600">${score}/100</div>
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            
+            content.innerHTML = html;
+            section.classList.remove('hidden');
         }
 
         function resetRuleEditorForm() {
@@ -4342,7 +4454,9 @@ ${scriptClose}
             document.getElementById('modalTitle').textContent = 'Modifier la Règle SEO';
             document.getElementById('ruleName').value = rule.name || '';
             document.getElementById('ruleDescription').value = rule.description || '';
-            document.getElementById('ruleWebsite').value = rule.websiteId || '';
+            // Handle both populated and non-populated websiteId
+            const websiteId = rule.websiteId?._id || rule.websiteId || '';
+            document.getElementById('ruleWebsite').value = websiteId;
             document.getElementById('ruleMatchType').value = rule.targeting?.matchType || 'exact';
             document.getElementById('ruleUrlPattern').value = rule.targeting?.urlPattern || '';
             document.getElementById('rulePriority').value = rule.priority || 'medium';
@@ -4432,6 +4546,43 @@ ${scriptClose}
                 document.getElementById('modMeta').checked ? 'block' : 'none';
             document.getElementById('h1Section').style.display = 
                 document.getElementById('modH1').checked ? 'block' : 'none';
+        }
+
+        window.applyRecommendationToForm = function(index, recommendation) {
+            // Parse implementation code to extract values
+            const impl = recommendation.implementation || '';
+            
+            // Try to extract title
+            const titleMatch = impl.match(/<title[^>]*>([^<]+)<\/title>/i) || 
+                              impl.match(/content:\s*["']([^"']+)["']/);
+            if (titleMatch) {
+                document.getElementById('modTitle').checked = true;
+                document.getElementById('titleValue').value = titleMatch[1];
+            }
+            
+            // Try to extract meta description
+            const metaMatch = impl.match(/name="description"[^>]*content="([^"]+)"/i) ||
+                             impl.match(/content="([^"]+)"[^>]*name="description"/i);
+            if (metaMatch) {
+                document.getElementById('modMeta').checked = true;
+                document.getElementById('metaValue').value = metaMatch[1];
+            }
+            
+            // Try to extract H1
+            const h1Match = impl.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+            if (h1Match) {
+                document.getElementById('modH1').checked = true;
+                document.getElementById('h1Value').value = h1Match[1];
+            }
+            
+            // Update visibility
+            window.updateModificationSections();
+            
+            // Show notification
+            window.showNotification(`✅ Recommandation "${recommendation.title}" appliquée au formulaire`, 'success');
+            
+            // Scroll to modifications section
+            document.querySelector('#modTitle')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         window.createExampleRule = async function(type) {
