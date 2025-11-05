@@ -2065,7 +2065,8 @@ function getScoreExplanation(score) {
 }
 
 function renderDetailedScoreCard(label, score, color, icon, description, impact) {
-  const scoreColor = getScoreColor(score);
+  const roundedScore = Math.round(score || 0);
+  const scoreColor = getScoreColor(roundedScore);
   const bgColor = `bg-${color}-50`;
   const borderColor = `border-${color}-200`;
   
@@ -2079,11 +2080,11 @@ function renderDetailedScoreCard(label, score, color, icon, description, impact)
             <p class="text-xs text-gray-600 mt-0.5">${description}</p>
           </div>
         </div>
-        <div class="text-3xl font-bold ${scoreColor}">${score}</div>
+        <div class="text-3xl font-bold ${scoreColor}">${roundedScore}</div>
       </div>
       <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
-        <div class="${getScoreBarColor(score)} h-2 rounded-full transition-all duration-1000" 
-             style="width: ${score}%"></div>
+        <div class="${getScoreBarColor(roundedScore)} h-2 rounded-full transition-all duration-1000" 
+             style="width: ${roundedScore}%"></div>
       </div>
       <p class="text-xs text-gray-600 italic">${impact}</p>
     </div>
