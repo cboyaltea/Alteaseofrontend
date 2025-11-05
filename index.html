@@ -4396,6 +4396,113 @@ ${scriptClose}
                 return;
             }
             
+            // Build modifications array (format simple pour le pixel)
+            const modifications = [];
+            
+            // Title
+            if (document.getElementById('modTitle').checked) {
+                const value = document.getElementById('titleValue').value;
+                if (value) {
+                    modifications.push({
+                        type: 'meta',
+                        action: 'upsert',
+                        selector: 'title',
+                        content: value
+                    });
+                }
+            }
+            
+            // Meta Description
+            if (document.getElementById('modMeta').checked) {
+                const value = document.getElementById('metaValue').value;
+                if (value) {
+                    modifications.push({
+                        type: 'meta',
+                        action: 'upsert',
+                        selector: 'meta[name="description"]',
+                        attributes: {
+                            name: 'description',
+                            content: value
+                        }
+                    });
+                }
+            }
+            
+            // H1
+            if (document.getElementById('modH1').checked) {
+                const value = document.getElementById('h1Value').value;
+                if (value) {
+                    modifications.push({
+                        type: 'content',
+                        action: 'replace',
+                        selector: 'h1',
+                        content: value
+                    });
+                }
+            }
+            
+            // Open Graph
+            if (document.getElementById('modOG').checked) {
+                modifications.push({
+                    type: 'meta',
+                    action: 'upsert',
+                    selector: 'meta[property="og:type"]',
+                    attributes: {
+                        property: 'og:type',
+                        content: 'website'
+                    }
+                });
+            }
+            
+            // Twitter Card
+            if (document.getElementById('modTwitter').checked) {
+                modifications.push({
+                    type: 'meta',
+                    action: 'upsert',
+                    selector: 'meta[name="twitter:card"]',
+                    attributes: {
+                        name: 'twitter:card',
+                        content: 'summary_large_image'
+                    }
+                });
+            }
+            
+            // Canonical
+            if (document.getElementById('modCanonical').checked) {
+                modifications.push({
+                    type: 'meta',
+                    action: 'upsert',
+                    selector: 'link[rel="canonical"]',
+                    attributes: {
+                        rel: 'canonical',
+                        href: '{current_url}'
+                    }
+                });
+            }
+            
+            // Robots
+            if (document.getElementById('modRobots').checked) {
+                modifications.push({
+                    type: 'meta',
+                    action: 'upsert',
+                    selector: 'meta[name="robots"]',
+                    attributes: {
+                        name: 'robots',
+                        content: 'index, follow'
+                    }
+                });
+            }
+            
+            // Schema.org
+            if (document.getElementById('modSchema').checked) {
+                modifications.push({
+                    type: 'inject',
+                    action: 'append',
+                    selector: 'head',
+                    content: '<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage"}</script>'
+                });
+            }
+            
             const ruleData = {
                 websiteId,
                 name,
@@ -4404,70 +4511,13 @@ ${scriptClose}
                     matchType: document.getElementById('ruleMatchType').value,
                     urlPattern
                 },
-                modifications: {},
+                modifications: modifications,  // Format array simple
                 priority: parseInt(document.getElementById('rulePriority').value),
-                status: document.getElementById('ruleStatus').value
+                status: document.getElementById('ruleStatus').value,
+                isActive: document.getElementById('ruleStatus').value === 'active'
             };
             
-            // Build modifications object
-            if (document.getElementById('modTitle').checked) {
-                const action = document.getElementById('titleAction').value;
-                const value = document.getElementById('titleValue').value;
-                ruleData.modifications.title = {
-                    enabled: true,
-                    action,
-                    [action === 'template' ? 'template' : 'value']: value
-                };
-            }
-            
-            if (document.getElementById('modMeta').checked) {
-                const action = document.getElementById('metaAction').value;
-                ruleData.modifications.metaDescription = {
-                    enabled: true,
-                    action,
-                    value: document.getElementById('metaValue').value
-                };
-            }
-            
-            if (document.getElementById('modH1').checked) {
-                ruleData.modifications.h1 = {
-                    enabled: true,
-                    action: document.getElementById('h1Action').value,
-                    value: document.getElementById('h1Value').value
-                };
-            }
-            
-            if (document.getElementById('modOG').checked) {
-                ruleData.modifications.openGraph = {
-                    enabled: true,
-                    tags: [{ property: 'og:type', content: 'website' }]
-                };
-            }
-            
-            if (document.getElementById('modTwitter').checked) {
-                ruleData.modifications.twitterCard = {
-                    enabled: true,
-                    tags: [{ name: 'twitter:card', content: 'summary_large_image' }]
-                };
-            }
-            
-            if (document.getElementById('modCanonical').checked) {
-                ruleData.modifications.canonical = { enabled: true, action: 'set', useCurrentUrl: true };
-            }
-            
-            if (document.getElementById('modRobots').checked) {
-                ruleData.modifications.robots = { enabled: true, directives: ['index', 'follow'] };
-            }
-            
-            if (document.getElementById('modSchema').checked) {
-                ruleData.modifications.structuredData = {
-                    enabled: true,
-                    schemas: [{
-                        type: 'WebPage',
-                        data: { "@context": "https://schema.org", "@type": "WebPage" }
-                    }]
-                };
-            }
+            console.log('✨ Règle au format simple (compatible pixel):', ruleData);
             
             try {
                 const url = window.currentEditingRuleId 
@@ -4489,7 +4539,7 @@ ${scriptClose}
                 
                 if (data.success) {
                     window.showNotification(
-                        window.currentEditingRuleId ? 'Règle mise à jour !' : 'Règle créée !', 
+                        window.currentEditingRuleId ? '✅ Règle mise à jour !' : '✅ Règle créée et compatible avec le pixel !', 
                         'success'
                     );
                     closeRuleModal();
