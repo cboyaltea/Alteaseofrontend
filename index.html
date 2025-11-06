@@ -14,6 +14,11 @@
             font-family: 'Inter', sans-serif;
         }
         
+        /* Modern smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
@@ -24,13 +29,62 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
+        /* Enhanced animations */
         .animate-fade-in {
-            animation: fadeIn 0.5s ease-in;
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { 
+                opacity: 0; 
+                transform: translateY(10px) scale(0.98);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* Slide in from left */
+        .animate-slide-in-left {
+            animation: slideInLeft 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Scale in animation */
+        .animate-scale-in {
+            animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* Pulse animation for notifications */
+        .animate-pulse-once {
+            animation: pulseOnce 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes pulseOnce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
         
         .spinner {
@@ -39,7 +93,7 @@
             border-radius: 50%;
             width: 40px;
             height: 40px;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite;
         }
         
         @keyframes spin {
@@ -47,39 +101,218 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Modern tabs with slide indicator */
         .tab-active {
-            border-bottom: 3px solid #3b82f6;
+            position: relative;
             color: #3b82f6;
             font-weight: 600;
         }
+        
+        .tab-active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px 2px 0 0;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: scaleX(0);
+            }
+            to {
+                transform: scaleX(1);
+            }
+        }
 
+        /* Enhanced card hover effects */
         .stats-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
         }
 
         .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stats-card:hover::before {
+            left: 100%;
         }
 
         .content-preview {
             max-height: 300px;
             overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        
+        /* Custom scrollbar */
+        .content-preview::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .content-preview::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .content-preview::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            border-radius: 4px;
+        }
+        
+        .content-preview::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #764ba2, #667eea);
         }
 
+        /* Enhanced buttons */
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.5);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
+        /* Smooth modal overlay */
         .modal-overlay {
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            animation: fadeInOverlay 0.3s ease-out;
+        }
+        
+        @keyframes fadeInOverlay {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Input focus effects */
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transition: all 0.2s ease;
+        }
+        
+        /* Checkbox animations */
+        input[type="checkbox"] {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        input[type="checkbox"]:checked {
+            animation: checkboxPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes checkboxPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Notification slide in */
+        .notification-enter {
+            animation: notificationSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes notificationSlide {
+            from {
+                opacity: 0;
+                transform: translateX(400px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Badge pulse */
+        .badge-pulse {
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes badgePulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+        }
+        
+        /* Smooth page transitions */
+        .page-transition {
+            animation: pageTransition 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes pageTransition {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* PDF Export Styles */
@@ -363,7 +596,7 @@
 
                 <!-- Stats Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="stats-card bg-white p-6 rounded-xl shadow-sm">
+                    <div class="stats-card bg-white p-6 rounded-xl shadow-sm animate-scale-in" style="animation-delay: 0.1s">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm text-gray-600 mb-1">Sites Web</p>
@@ -375,7 +608,7 @@
                         </div>
                     </div>
 
-                    <div class="stats-card bg-white p-6 rounded-xl shadow-sm">
+                    <div class="stats-card bg-white p-6 rounded-xl shadow-sm animate-scale-in" style="animation-delay: 0.2s">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm text-gray-600 mb-1">Contenus Générés</p>
@@ -387,7 +620,7 @@
                         </div>
                     </div>
 
-                    <div class="stats-card bg-white p-6 rounded-xl shadow-sm">
+                    <div class="stats-card bg-white p-6 rounded-xl shadow-sm animate-scale-in" style="animation-delay: 0.3s">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm text-gray-600 mb-1">Pages Analysées</p>
@@ -399,7 +632,7 @@
                         </div>
                     </div>
 
-                    <div class="stats-card bg-white p-6 rounded-xl shadow-sm">
+                    <div class="stats-card bg-white p-6 rounded-xl shadow-sm animate-scale-in" style="animation-delay: 0.4s">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm text-gray-600 mb-1">Utilisateurs</p>
@@ -1473,9 +1706,17 @@
 
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
-        <div class="bg-white rounded-xl p-8 shadow-2xl text-center">
-            <div class="spinner mx-auto mb-4"></div>
-            <p class="text-gray-700 font-medium" id="loadingText">Chargement...</p>
+        <div class="bg-white rounded-2xl p-10 shadow-2xl text-center animate-scale-in">
+            <div class="relative">
+                <div class="spinner mx-auto mb-6"></div>
+                <div class="absolute inset-0 spinner mx-auto mb-6 opacity-30" style="animation-delay: 0.2s"></div>
+            </div>
+            <p class="text-gray-700 font-semibold text-lg" id="loadingText">Chargement...</p>
+            <div class="mt-4 flex justify-center space-x-1">
+                <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+                <div class="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                <div class="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+            </div>
         </div>
     </div>
 
@@ -4004,21 +4245,31 @@ ${scriptClose}
         }
 
         window.showNotification = function(message, type = 'info') {
-            const colors = {
-                success: 'bg-green-500',
-                error: 'bg-red-500',
-                info: 'bg-blue-500',
-                warning: 'bg-yellow-500'
+            const configs = {
+                success: { color: 'bg-gradient-to-r from-green-500 to-emerald-600', icon: '✅' },
+                error: { color: 'bg-gradient-to-r from-red-500 to-rose-600', icon: '❌' },
+                info: { color: 'bg-gradient-to-r from-blue-500 to-indigo-600', icon: 'ℹ️' },
+                warning: { color: 'bg-gradient-to-r from-yellow-500 to-orange-600', icon: '⚠️' }
             };
             
+            const config = configs[type] || configs.info;
+            
             const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in`;
-            notification.textContent = message;
+            notification.className = `fixed top-4 right-4 ${config.color} text-white px-6 py-4 rounded-xl shadow-2xl z-50 notification-enter flex items-center space-x-3 max-w-md`;
+            notification.style.backdropFilter = 'blur(10px)';
+            
+            notification.innerHTML = `
+                <span class="text-2xl animate-pulse-once">${config.icon}</span>
+                <span class="flex-1 font-medium">${message}</span>
+                <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200 text-xl leading-none">×</button>
+            `;
             
             document.body.appendChild(notification);
             
+            // Auto remove with fade out
             setTimeout(() => {
-                notification.remove();
+                notification.style.animation = 'notificationSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1) reverse';
+                setTimeout(() => notification.remove(), 400);
             }, 3000);
         }
 
